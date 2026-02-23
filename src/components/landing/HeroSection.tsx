@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Shield, LogIn } from "lucide-react";
+import { ArrowLeft, Shield, BarChart3 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export function HeroSection() {
@@ -53,9 +53,9 @@ export function HeroSection() {
               הכר את הארכיטקט
               <ArrowLeft className="h-4 w-4" />
             </Button>
-            <Button variant="outline" size="lg" className="gap-2" onClick={() => navigate("/auth")}>
-              <LogIn className="h-4 w-4" />
-              כניסה למערכת
+            <Button variant="outline" size="lg" className="gap-2" onClick={() => navigate("/dashboard")}>
+              <BarChart3 className="h-4 w-4" />
+              דשבורד מערכתי
             </Button>
           </div>
         </div>

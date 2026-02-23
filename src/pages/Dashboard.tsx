@@ -1,7 +1,5 @@
-import { useAuth } from "@/hooks/useAuth";
 import { useCOR } from "@/contexts/CORContext";
-import { Button } from "@/components/ui/button";
-import { LogOut, TrendingUp } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 import { HealthGauge } from "@/components/dashboard/HealthGauge";
 import { ASAEngine } from "@/components/dashboard/ASAEngine";
 import { TourniquetManager } from "@/components/dashboard/TourniquetManager";
@@ -10,7 +8,6 @@ import { GlassBoxLog } from "@/components/dashboard/GlassBoxLog";
 import { QuoteEngine } from "@/components/dashboard/QuoteEngine";
 
 const Dashboard = () => {
-  const { user, signOut } = useAuth();
   const { deltaPotential, healthLevel } = useCOR();
 
   return (
@@ -20,12 +17,6 @@ const Dashboard = () => {
           <h1 className="text-lg font-semibold text-foreground font-display">
             COR-SYS <span className="text-primary">Command Center</span>
           </h1>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">{user?.email}</span>
-            <Button variant="ghost" size="sm" onClick={signOut}>
-              <LogOut className="w-4 h-4" />
-            </Button>
-          </div>
         </div>
       </header>
 
