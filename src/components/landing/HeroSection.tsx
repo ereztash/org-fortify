@@ -16,7 +16,7 @@ export function HeroSection() {
   };
 
   return (
-    <section className="relative min-h-[95vh] flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-[100svh] flex items-center justify-center overflow-hidden px-4 sm:px-6">
       {/* Animated background grid */}
       <div className="absolute inset-0 opacity-5">
         <div
@@ -31,20 +31,20 @@ export function HeroSection() {
 
       {/* Floating orbs */}
       <motion.div
-        className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full"
+        className="absolute top-1/4 left-1/4 w-40 md:w-64 h-40 md:h-64 rounded-full"
         style={{ background: "radial-gradient(circle, hsl(var(--primary) / 0.08), transparent 70%)" }}
         animate={{ x: [0, 30, -20, 0], y: [0, -20, 30, 0], scale: [1, 1.1, 0.95, 1] }}
         transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
       />
       <motion.div
-        className="absolute bottom-1/3 right-1/4 w-96 h-96 rounded-full"
+        className="absolute bottom-1/3 right-1/4 w-60 md:w-96 h-60 md:h-96 rounded-full"
         style={{ background: "radial-gradient(circle, hsl(var(--health-optimal) / 0.06), transparent 70%)" }}
         animate={{ x: [0, -40, 20, 0], y: [0, 25, -35, 0], scale: [1, 0.9, 1.1, 1] }}
         transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      <div className="container relative z-10 px-6">
-        <div className="max-w-4xl mx-auto text-center space-y-8">
+      <div className="container relative z-10">
+        <div className="max-w-4xl mx-auto text-center space-y-5 md:space-y-8">
           {/* Profile photo */}
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
@@ -55,15 +55,16 @@ export function HeroSection() {
             <img
               src={erezPhoto}
               alt="ארז טל שיר"
-              className="h-28 w-28 rounded-full object-cover border-2 border-primary/30 shadow-lg shadow-primary/10"
+              className="h-20 w-20 md:h-28 md:w-28 rounded-full object-cover border-2 border-primary/30 shadow-lg shadow-primary/10"
             />
           </motion.div>
+
           {/* Status badge */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 glass rounded-full px-4 py-2 text-sm text-muted-foreground"
+            className="inline-flex items-center gap-2 glass rounded-full px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm text-muted-foreground"
           >
             <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
             <span>אבחון מערכתי ראשוני, ללא עלות, ללא התחייבות</span>
@@ -74,7 +75,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.15 }}
-            className="text-4xl md:text-6xl lg:text-7xl font-bold font-display tracking-tight leading-tight"
+            className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold font-display tracking-tight leading-tight"
           >
             <span className="text-foreground">הארגון שלך </span>
             <motion.span
@@ -91,7 +92,7 @@ export function HeroSection() {
               מדמם
             </motion.span>
             <br />
-            <span className="text-muted-foreground text-3xl md:text-4xl lg:text-5xl">
+            <span className="text-muted-foreground text-xl sm:text-2xl md:text-4xl lg:text-5xl">
               ואף אחד לא יודע מאיפה.
             </span>
           </motion.h1>
@@ -101,7 +102,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.35 }}
-            className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed"
+            className="text-base md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed"
           >
             אני מאתר את הנקודה המדויקת שבה המשאבים דולפים,
             <br className="hidden md:block" />
@@ -113,27 +114,29 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
-            className="flex flex-col items-center gap-4 pt-4"
+            className="flex flex-col items-center gap-3 md:gap-4 pt-2 md:pt-4"
           >
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center w-full sm:w-auto">
               <Button
                 size="lg"
                 asChild
-                className="gap-3 text-lg px-10 py-7 shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all hover:scale-[1.02]"
+                className="gap-3 text-base md:text-lg px-8 md:px-10 py-6 md:py-7 shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all hover:scale-[1.02] w-full sm:w-auto"
               >
                 <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
                   <MessageCircle className="h-5 w-5" />
                   שיחת אבחון ראשונית, חינם
                 </a>
               </Button>
-              <Button variant="outline" size="lg" onClick={scrollToROI} className="gap-2 px-8 py-6">
-                <Shield className="h-5 w-5" />
-                חשב את עלות אי-העשייה
-              </Button>
-              <Button variant="ghost" size="lg" className="gap-2" onClick={() => navigate("/dashboard")}>
-                <BarChart3 className="h-4 w-4" />
-                דשבורד מערכתי
-              </Button>
+              <div className="flex gap-3 w-full sm:w-auto">
+                <Button variant="outline" size="lg" onClick={scrollToROI} className="gap-2 px-5 md:px-8 py-5 md:py-6 flex-1 sm:flex-initial">
+                  <Shield className="h-5 w-5 shrink-0" />
+                  <span className="text-sm md:text-base">חשב עלות אי-העשייה</span>
+                </Button>
+                <Button variant="ghost" size="lg" className="gap-2 px-4 md:px-6 py-5 md:py-6" onClick={() => navigate("/dashboard")}>
+                  <BarChart3 className="h-4 w-4 shrink-0" />
+                  <span className="text-sm md:text-base">דשבורד</span>
+                </Button>
+              </div>
             </div>
             <p className="text-xs text-muted-foreground">
               15 דקות בוואטסאפ · אפס התחייבות · אפס מכירות
