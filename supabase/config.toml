@@ -1,1 +1,4 @@
 project_id = "fistudtrxrzdkuhgfyoh"
+
+[functions.asa-analyze]
+verify_jwt = false
