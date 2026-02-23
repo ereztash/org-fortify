@@ -49,12 +49,12 @@ export function ArchitectSection() {
               עובד סוציאלי מהמסורת המערכתית. מומחה להנדסת תהליכים בארגוני Scale-up.
             </p>
             <p>
-              אני לא מטפל באנשים — אני מרפא את <span className="text-foreground font-medium">המבנה</span> שבו הם פועלים.
+              אני לא מטפל באנשים, אני מרפא את <span className="text-foreground font-medium">המבנה</span> שבו הם פועלים.
               באמצעות מתודולוגיית <span className="text-primary font-medium">"העדשה הכפולה"</span>, אני מאתר
               משאבים שדולפים עקב נורמליזציה של סטייה ניהולית, ומטמיע חוסמי עורקים טכנולוגיים לעצירת הדימום.
             </p>
             <p className="text-sm">
-              למה עובד סוציאלי? כי עבודה סוציאלית מערכתית לא עוסקת בפרט — היא עוסקת בסביבה.
+              למה עובד סוציאלי? כי עבודה סוציאלית מערכתית לא עוסקת בפרט, היא עוסקת בסביבה.
               אני מביא את אותו החשיבה לארגונים: לא "מה לא בסדר עם האנשים", אלא "מה לא בסדר עם המבנה שבו הם פועלים".
             </p>
           </div>
@@ -62,9 +62,9 @@ export function ArchitectSection() {
           {/* Values */}
           <div className="grid sm:grid-cols-3 gap-4 pt-2">
             {[
-              { label: "שקיפות מלאה", desc: "כל נוסחה, כל הנחה, כל מספר — גלויים לך" },
+              { label: "שקיפות מלאה", desc: "כל נוסחה, כל הנחה, כל מספר, גלויים לך" },
               { label: "אפס תלות", desc: "אני נכנס, מתקן ויוצא. הצוות שלך ממשיך לבד" },
-              { label: "מדיד ומוכח", desc: "אם לא חסכתי לך כסף — לא עבדתי" },
+              { label: "מדיד ומוכח", desc: "אם לא חסכתי לך כסף, לא עבדתי" },
             ].map((v, i) => (
               <motion.div
                 key={v.label}
@@ -89,7 +89,7 @@ export function ArchitectSection() {
             className="border-t border-border/50 pt-6"
           >
             <p className="text-sm text-muted-foreground italic">
-              "צריך גלגל — אני גלגל. אפס פוזה."
+              "צריך גלגל, אני גלגל. אפס פוזה."
             </p>
           </motion.div>
         </motion.div>

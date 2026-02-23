@@ -21,7 +21,7 @@ export function LandingFooter() {
         <p className="text-muted-foreground max-w-md mx-auto">
           15 דקות שיחה יכולות לחשוף דליפה של מאות אלפי שקלים בשנה.
           <br />
-          אם לא רלוונטי — אגיד לך.
+          אם לא רלוונטי, אגיד לך.
         </p>
         <Button
           size="lg"
