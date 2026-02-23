@@ -14,7 +14,162 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      audit_log: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          org_id: string
+          semantic_weight: number | null
+          source: string | null
+          type: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          org_id: string
+          semantic_weight?: number | null
+          source?: string | null
+          type: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          org_id?: string
+          semantic_weight?: number | null
+          source?: string | null
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_log_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      diagnostics: {
+        Row: {
+          ai_risk_factor: number
+          c_cost: number
+          created_at: string
+          delta_potential: number
+          h_hours: number
+          id: string
+          org_id: string
+          p_probability: number
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          ai_risk_factor?: number
+          c_cost?: number
+          created_at?: string
+          delta_potential?: number
+          h_hours?: number
+          id?: string
+          org_id: string
+          p_probability?: number
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          ai_risk_factor?: number
+          c_cost?: number
+          created_at?: string
+          delta_potential?: number
+          h_hours?: number
+          id?: string
+          org_id?: string
+          p_probability?: number
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diagnostics_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organizations: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          industry: string | null
+          name: string
+          size: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          industry?: string | null
+          name: string
+          size?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          industry?: string | null
+          name?: string
+          size?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      tourniquets: {
+        Row: {
+          created_at: string
+          id: string
+          linked_insight_id: string | null
+          org_id: string
+          priority: number
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          linked_insight_id?: string | null
+          org_id: string
+          priority?: number
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          linked_insight_id?: string | null
+          org_id?: string
+          priority?: number
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tourniquets_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

@@ -1,7 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Shield } from "lucide-react";
+import { ArrowLeft, Shield, LogIn } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export function HeroSection() {
+  const navigate = useNavigate();
   const scrollToROI = () => {
     document.getElementById("roi-engine")?.scrollIntoView({ behavior: "smooth" });
   };
@@ -50,6 +52,10 @@ export function HeroSection() {
             <Button variant="ghost" size="lg" className="gap-2 text-muted-foreground" onClick={() => document.getElementById("architect")?.scrollIntoView({ behavior: "smooth" })}>
               הכר את הארכיטקט
               <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" size="lg" className="gap-2" onClick={() => navigate("/auth")}>
+              <LogIn className="h-4 w-4" />
+              כניסה למערכת
             </Button>
           </div>
         </div>
