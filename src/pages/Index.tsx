@@ -1,12 +1,21 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { HeroSection } from "@/components/landing/HeroSection";
+import { ArchitectSection } from "@/components/landing/ArchitectSection";
+import { ROIEngine } from "@/components/landing/ROIEngine";
 
 const Index = () => {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-background">
+      <HeroSection />
+      <ArchitectSection />
+      <ROIEngine />
+
+      {/* Footer */}
+      <footer className="py-12 px-6 border-t border-border/50">
+        <div className="container max-w-4xl mx-auto text-center text-sm text-muted-foreground">
+          <p>COR-SYS v3.4 — מערכת אבחון וחוסן ארגוני</p>
+          <p className="mt-1">המערכת מסנכרנת חוסן.</p>
+        </div>
+      </footer>
     </div>
   );
 };
