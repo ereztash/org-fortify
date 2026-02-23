@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import erezPhoto from "@/assets/erez-profile.png";
 
 export function ArchitectSection() {
   return (
@@ -21,6 +22,7 @@ export function ArchitectSection() {
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               <Avatar className="h-20 w-20 border-2 border-primary/30">
+                <AvatarImage src={erezPhoto} alt="ארז טל שיר" />
                 <AvatarFallback className="bg-primary/10 text-primary text-2xl font-bold font-display">
                   אט
                 </AvatarFallback>
