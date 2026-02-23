@@ -46,10 +46,10 @@ export function ROIEngine() {
           >
             <Card className="glass border-border/30">
               <CardContent className="p-6 space-y-8">
-                {/* H — Hours */}
+                {/* H: שעות */}
                 <div className="space-y-3">
                   <div className="flex justify-between items-baseline">
-                    <label className="text-sm font-medium">H — שעות אובדן שבועיות</label>
+                    <label className="text-sm font-medium">H: שעות אובדן שבועיות</label>
                     <motion.span
                       key={roiParams.h}
                       initial={{ scale: 1.3, color: "hsl(var(--primary))" }}
@@ -68,10 +68,10 @@ export function ROIEngine() {
                   />
                 </div>
 
-                {/* C — Cost */}
+                {/* C: עלות */}
                 <div className="space-y-3">
                   <div className="flex justify-between items-baseline">
-                    <label className="text-sm font-medium">C — עלות לשעה (₪)</label>
+                    <label className="text-sm font-medium">C: עלות לשעה (₪)</label>
                     <motion.span
                       key={roiParams.c}
                       initial={{ scale: 1.3 }}
@@ -90,10 +90,10 @@ export function ROIEngine() {
                   />
                 </div>
 
-                {/* P — Probability */}
+                {/* P: הסתברות */}
                 <div className="space-y-3">
                   <div className="flex justify-between items-baseline">
-                    <label className="text-sm font-medium">P — הסתברות הישנות</label>
+                    <label className="text-sm font-medium">P: הסתברות הישנות</label>
                     <motion.span
                       key={roiParams.p}
                       initial={{ scale: 1.3 }}
@@ -114,12 +114,12 @@ export function ROIEngine() {
               </CardContent>
             </Card>
 
-            {/* Glass Box — Formula */}
+            {/* Glass Box: נוסחה שקופה */}
             <Card className="glass border-primary/20">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm text-primary flex items-center gap-2">
                   <span className="h-2 w-2 rounded-full bg-primary animate-pulse-glow" />
-                  Glass Box — נוסחה שקופה
+                  Glass Box: נוסחה שקופה
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2 text-sm font-mono" dir="ltr">

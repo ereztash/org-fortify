@@ -5,7 +5,7 @@ const commitments = [
   {
     icon: Eye,
     title: "Glass Box, לא Black Box",
-    desc: "כל מודל, כל חישוב, כל המלצה — שקופים לחלוטין. אתה רואה בדיוק איך הגעתי למסקנה.",
+    desc: "כל מודל, כל חישוב, כל המלצה, שקופים לחלוטין. אתה רואה בדיוק איך הגעתי למסקנה.",
   },
   {
     icon: Lock,
@@ -15,12 +15,12 @@ const commitments = [
   {
     icon: Scale,
     title: "אתיקה מקצועית",
-    desc: "אם האבחון מראה שאתה לא צריך אותי — אגיד לך. אני לא ממציא בעיות כדי למכור פתרונות.",
+    desc: "אם האבחון מראה שאתה לא צריך אותי, אגיד לך. אני לא ממציא בעיות כדי למכור פתרונות.",
   },
   {
     icon: HeartHandshake,
     title: "הגינות כלכלית",
-    desc: "אבחון ראשוני חינם. אם לא הוכחתי ערך מדיד — לא שילמת. פשוט.",
+    desc: "אבחון ראשוני חינם. אם לא הוכחתי ערך מדיד, לא שילמת. פשוט.",
   },
 ];
 
@@ -38,7 +38,7 @@ export function EthicsSection() {
           <p className="text-sm text-primary font-medium tracking-wider">ההתחייבויות שלי</p>
           <h2 className="text-3xl md:text-4xl font-bold font-display">אתיקה קודמת לעסקים</h2>
           <p className="text-muted-foreground max-w-lg mx-auto">
-            בעולם מלא באגו של יועצים ובאזוורדס — אני מתחייב לסטנדרט אחר.
+            בעולם מלא באגו של יועצים ובאזוורדס, אני מתחייב לסטנדרט אחר.
           </p>
         </motion.div>
 

@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { MessageCircle, ChevronDown, Shield, BarChart3 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import erezPhoto from "@/assets/erez-profile.png";
 
 const WHATSAPP_URL = "https://wa.me/972524545963?text=היי%20ארז%2C%20אשמח%20לשיחת%20אבחון%20ראשונית";
 
@@ -43,7 +44,20 @@ export function HeroSection() {
       />
 
       <div className="container relative z-10 px-6">
-        <div className="max-w-3xl mx-auto text-center space-y-8">
+        <div className="max-w-4xl mx-auto text-center space-y-8">
+          {/* Profile photo */}
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.6 }}
+            className="flex justify-center"
+          >
+            <img
+              src={erezPhoto}
+              alt="ארז טל שיר"
+              className="h-28 w-28 rounded-full object-cover border-2 border-primary/30 shadow-lg shadow-primary/10"
+            />
+          </motion.div>
           {/* Status badge */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -52,7 +66,7 @@ export function HeroSection() {
             className="inline-flex items-center gap-2 glass rounded-full px-4 py-2 text-sm text-muted-foreground"
           >
             <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-            <span>אבחון מערכתי ראשוני — ללא עלות, ללא התחייבות</span>
+            <span>אבחון מערכתי ראשוני, ללא עלות, ללא התחייבות</span>
           </motion.div>
 
           {/* Main heading */}
@@ -109,7 +123,7 @@ export function HeroSection() {
               >
                 <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
                   <MessageCircle className="h-5 w-5" />
-                  שיחת אבחון ראשונית — חינם
+                  שיחת אבחון ראשונית, חינם
                 </a>
               </Button>
               <Button variant="outline" size="lg" onClick={scrollToROI} className="gap-2 px-8 py-6">
