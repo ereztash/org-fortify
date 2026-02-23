@@ -5,23 +5,46 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Mail, ArrowLeft, Loader2 } from "lucide-react";
+import { Mail, ArrowLeft, Loader2, Lock } from "lucide-react";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { signInWithMagicLink, user } = useAuth();
+  const [mode, setMode] = useState<"login" | "signup" | "magic">("login");
+  const { signInWithMagicLink, signInWithPassword, signUp, user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Redirect if already logged in
   if (user) {
     navigate("/dashboard");
     return null;
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handlePasswordAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !password) return;
+    setLoading(true);
+
+    if (mode === "signup") {
+      const { error } = await signUp(email, password);
+      setLoading(false);
+      if (error) {
+        toast({ title: "שגיאה", description: error.message, variant: "destructive" });
+      } else {
+        toast({ title: "נרשמת בהצלחה!", description: "מתחבר למערכת..." });
+      }
+    } else {
+      const { error } = await signInWithPassword(email, password);
+      setLoading(false);
+      if (error) {
+        toast({ title: "שגיאה", description: error.message, variant: "destructive" });
+      }
+    }
+  };
+
+  const handleMagicLink = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
     setLoading(true);
@@ -48,11 +71,19 @@ const Auth = () => {
         <Card className="glass border-border/50">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4 w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-              <Mail className="w-6 h-6 text-primary" />
+              {mode === "magic" ? <Mail className="w-6 h-6 text-primary" /> : <Lock className="w-6 h-6 text-primary" />}
             </div>
-            <CardTitle className="text-xl">כניסה למערכת</CardTitle>
+            <CardTitle className="text-xl">
+              {mode === "signup" ? "הרשמה למערכת" : "כניסה למערכת"}
+            </CardTitle>
             <CardDescription>
-              {sent ? "בדוק את תיבת הדואר שלך" : "הזן אימייל לקבלת קישור כניסה"}
+              {sent
+                ? "בדוק את תיבת הדואר שלך"
+                : mode === "magic"
+                ? "הזן אימייל לקבלת קישור כניסה"
+                : mode === "signup"
+                ? "צור חשבון חדש"
+                : "הזן אימייל וסיסמה"}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -61,16 +92,12 @@ const Auth = () => {
                 <p className="text-muted-foreground text-sm">
                   שלחנו קישור כניסה ל-<span className="text-foreground font-medium">{email}</span>
                 </p>
-                <Button
-                  variant="ghost"
-                  onClick={() => setSent(false)}
-                  className="text-sm"
-                >
+                <Button variant="ghost" onClick={() => setSent(false)} className="text-sm">
                   שלח שוב
                 </Button>
               </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-4">
+            ) : mode === "magic" ? (
+              <form onSubmit={handleMagicLink} className="space-y-4">
                 <Input
                   type="email"
                   placeholder="email@company.com"
@@ -81,12 +108,49 @@ const Auth = () => {
                   required
                 />
                 <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    "שלח קישור כניסה"
-                  )}
+                  {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "שלח קישור כניסה"}
                 </Button>
+                <Button type="button" variant="ghost" className="w-full text-sm" onClick={() => setMode("login")}>
+                  כניסה עם סיסמה
+                </Button>
+              </form>
+            ) : (
+              <form onSubmit={handlePasswordAuth} className="space-y-4">
+                <Input
+                  type="email"
+                  placeholder="email@company.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="text-left"
+                  dir="ltr"
+                  required
+                />
+                <Input
+                  type="password"
+                  placeholder="סיסמה"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="text-left"
+                  dir="ltr"
+                  required
+                  minLength={6}
+                />
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : mode === "signup" ? "הרשמה" : "כניסה"}
+                </Button>
+                <div className="flex flex-col gap-2">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="w-full text-sm"
+                    onClick={() => setMode(mode === "signup" ? "login" : "signup")}
+                  >
+                    {mode === "signup" ? "יש לי חשבון — כניסה" : "אין לי חשבון — הרשמה"}
+                  </Button>
+                  <Button type="button" variant="ghost" className="w-full text-sm text-muted-foreground" onClick={() => setMode("magic")}>
+                    כניסה עם קישור מייל
+                  </Button>
+                </div>
               </form>
             )}
           </CardContent>
