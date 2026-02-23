@@ -1,6 +1,8 @@
 import { useCOR } from "@/contexts/CORContext";
-import { TrendingUp } from "lucide-react";
+import { TrendingUp, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import { HealthGauge } from "@/components/dashboard/HealthGauge";
 import { ASAEngine } from "@/components/dashboard/ASAEngine";
 import { TourniquetManager } from "@/components/dashboard/TourniquetManager";
@@ -22,6 +24,7 @@ const fadeUp = {
 
 const Dashboard = () => {
   const { deltaPotential, healthLevel } = useCOR();
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-background">
@@ -30,6 +33,10 @@ const Dashboard = () => {
           <h1 className="text-lg font-semibold text-foreground font-display">
             COR-SYS <span className="text-primary">Command Center</span>
           </h1>
+          <Button variant="ghost" size="sm" onClick={() => navigate("/")} className="gap-2">
+            <ArrowRight className="h-4 w-4" />
+            חזרה לדף הבית
+          </Button>
         </div>
       </header>
 
