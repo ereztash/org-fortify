@@ -1,21 +1,25 @@
 import { HeroSection } from "@/components/landing/HeroSection";
+import { PainSection } from "@/components/landing/PainSection";
+import { HowItWorksSection } from "@/components/landing/HowItWorksSection";
 import { ArchitectSection } from "@/components/landing/ArchitectSection";
 import { ROIEngine } from "@/components/landing/ROIEngine";
+import { EthicsSection } from "@/components/landing/EthicsSection";
+import { FAQSection } from "@/components/landing/FAQSection";
+import { LandingFooter } from "@/components/landing/LandingFooter";
+import { LandingWhatsAppFAB } from "@/components/landing/WhatsAppFAB";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <HeroSection />
+      <PainSection />
+      <HowItWorksSection />
       <ArchitectSection />
       <ROIEngine />
-
-      {/* Footer */}
-      <footer className="py-12 px-6 border-t border-border/50">
-        <div className="container max-w-4xl mx-auto text-center text-sm text-muted-foreground">
-          <p>COR-SYS v3.4 — מערכת אבחון וחוסן ארגוני</p>
-          <p className="mt-1">המערכת מסנכרנת חוסן.</p>
-        </div>
-      </footer>
+      <EthicsSection />
+      <FAQSection />
+      <LandingFooter />
+      <LandingWhatsAppFAB />
     </div>
   );
 };
