@@ -24,9 +24,17 @@ const commitments = [
   },
 ];
 
+const antiPatterns = [
+  "לא מוכר הדרכות",
+  "לא ריטיינר חודשי",
+  "לא מצגת של 80 עמודים",
+  "לא באזוורדס",
+  "לא תלות ביועץ",
+];
+
 export function EthicsSection() {
   return (
-    <section className="py-24 px-6">
+    <section className="py-24 px-6 scroll-mt-20">
       <div className="container max-w-4xl mx-auto space-y-12">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -40,6 +48,24 @@ export function EthicsSection() {
           <p className="text-muted-foreground max-w-lg mx-auto">
             בעולם מלא באגו של יועצים ובאזוורדס, אני מתחייב לסטנדרט אחר.
           </p>
+        </motion.div>
+
+        {/* Anti-Patterns */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="flex flex-wrap justify-center gap-3"
+        >
+          {antiPatterns.map((item) => (
+            <span
+              key={item}
+              className="px-4 py-2 rounded-full border border-border/50 text-sm text-muted-foreground line-through decoration-destructive/60"
+            >
+              {item}
+            </span>
+          ))}
         </motion.div>
 
         <div className="grid sm:grid-cols-2 gap-5">

@@ -16,7 +16,7 @@ export function HeroSection() {
   };
 
   return (
-    <section className="relative min-h-[100svh] flex items-center justify-center overflow-hidden px-4 sm:px-6">
+    <section className="relative min-h-[100svh] flex items-center justify-center overflow-hidden px-4 sm:px-6 scroll-mt-20">
       {/* Animated background grid */}
       <div className="absolute inset-0 opacity-5">
         <div
