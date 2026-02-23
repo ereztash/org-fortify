@@ -11,6 +11,7 @@ import { GlassBoxLog } from "@/components/dashboard/GlassBoxLog";
 import { QuoteEngine } from "@/components/dashboard/QuoteEngine";
 import { ProfileCard } from "@/components/dashboard/ProfileCard";
 import { WhatsAppFAB } from "@/components/dashboard/WhatsAppFAB";
+import { ROISliders } from "@/components/dashboard/ROISliders";
 
 const stagger = {
   hidden: {},
@@ -81,8 +82,9 @@ const Dashboard = () => {
           <GlassBoxLog />
         </motion.div>
 
-        {/* Quote Engine */}
-        <motion.div variants={fadeUp}>
+        {/* ROI Sliders + Quote Engine */}
+        <motion.div variants={fadeUp} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <ROISliders />
           <QuoteEngine />
         </motion.div>
       </motion.main>
