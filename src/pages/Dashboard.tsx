@@ -1,11 +1,24 @@
 import { useCOR } from "@/contexts/CORContext";
 import { TrendingUp } from "lucide-react";
+import { motion } from "framer-motion";
 import { HealthGauge } from "@/components/dashboard/HealthGauge";
 import { ASAEngine } from "@/components/dashboard/ASAEngine";
 import { TourniquetManager } from "@/components/dashboard/TourniquetManager";
 import { GanttChart } from "@/components/dashboard/GanttChart";
 import { GlassBoxLog } from "@/components/dashboard/GlassBoxLog";
 import { QuoteEngine } from "@/components/dashboard/QuoteEngine";
+import { ProfileCard } from "@/components/dashboard/ProfileCard";
+import { WhatsAppFAB } from "@/components/dashboard/WhatsAppFAB";
+
+const stagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.12 } },
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } },
+};
 
 const Dashboard = () => {
   const { deltaPotential, healthLevel } = useCOR();
@@ -20,9 +33,17 @@ const Dashboard = () => {
         </div>
       </header>
 
-      <main className="container max-w-7xl mx-auto p-6 space-y-6">
+      <motion.main
+        variants={stagger}
+        initial="hidden"
+        animate="show"
+        className="container max-w-7xl mx-auto p-6 space-y-6"
+      >
+        {/* Profile */}
+        <ProfileCard />
+
         {/* Top row — Health + Summary */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <motion.div variants={fadeUp} className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="glass rounded-2xl p-6 flex items-center justify-center">
             <HealthGauge />
           </div>
@@ -40,24 +61,27 @@ const Dashboard = () => {
               </p>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Main grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <motion.div variants={fadeUp} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <ASAEngine />
           <TourniquetManager />
-        </div>
+        </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <motion.div variants={fadeUp} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <GanttChart />
           <GlassBoxLog />
-        </div>
+        </motion.div>
 
         {/* Quote Engine */}
-        <QuoteEngine />
-      </main>
+        <motion.div variants={fadeUp}>
+          <QuoteEngine />
+        </motion.div>
+      </motion.main>
+
+      <WhatsAppFAB />
     </div>
   );
 };
-
 export default Dashboard;
