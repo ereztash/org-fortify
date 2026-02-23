@@ -5,20 +5,23 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import { motion } from "framer-motion";
 
+const WHATSAPP_ROI_URL = "https://wa.me/972524545963?text=היי%20ארז%2C%20המחשבון%20הראה%20לי%20מספרים%20מעניינים";
+
 export function ROIEngine() {
   const { roiParams, setROIParams, aiRiskFactor, deltaPotential } = useCOR();
 
+  const annualLoss = roiParams.h * roiParams.c * 52;
+
   const chartData = useMemo(() => {
-    const annualLoss = roiParams.h * roiParams.c * 52;
     return [
       { name: "עלות אי-עשייה שנתית", value: annualLoss, color: "hsl(0, 72%, 51%)" },
       { name: "ΔPotential (כולל AI)", value: deltaPotential, color: "hsl(38, 92%, 50%)" },
       { name: "חיסכון פוטנציאלי", value: deltaPotential * 0.7, color: "hsl(160, 84%, 39%)" },
     ];
-  }, [roiParams, deltaPotential]);
+  }, [annualLoss, deltaPotential]);
 
   return (
-    <section id="roi-engine" className="py-24 px-6">
+    <section id="roi-engine" className="py-24 px-6 scroll-mt-20">
       <div className="container max-w-5xl mx-auto space-y-8">
         {/* Header */}
         <motion.div
@@ -66,6 +69,7 @@ export function ROIEngine() {
                     max={40}
                     step={1}
                   />
+                  <p className="text-xs text-muted-foreground">כמה שעות בשבוע מבוזבזות על תהליכים שבורים, ישיבות מיותרות, או עבודה כפולה?</p>
                 </div>
 
                 {/* C: עלות */}
@@ -88,6 +92,7 @@ export function ROIEngine() {
                     max={1000}
                     step={10}
                   />
+                  <p className="text-xs text-muted-foreground">עלות ממוצעת לשעת עובד כולל תקורה (שכר + הוצאות נלוות).</p>
                 </div>
 
                 {/* P: הסתברות */}
@@ -110,6 +115,7 @@ export function ROIEngine() {
                     max={95}
                     step={5}
                   />
+                  <p className="text-xs text-muted-foreground">מה הסיכוי שהבעיות האלה יחזרו על עצמן בלי טיפול מבני?</p>
                 </div>
               </CardContent>
             </Card>
@@ -189,6 +195,38 @@ export function ROIEngine() {
             </Card>
           </motion.div>
         </div>
+
+        {/* Dynamic CTA */}
+        {annualLoss > 50000 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="text-center space-y-4 pt-4"
+          >
+            <motion.p
+              key={annualLoss}
+              initial={{ scale: 1.05 }}
+              animate={{ scale: 1 }}
+              className="text-lg md:text-xl font-display font-semibold text-foreground"
+            >
+              הארגון שלך מפסיד{" "}
+              <span className="text-primary animate-pulse">
+                ₪{annualLoss.toLocaleString("he-IL")}
+              </span>{" "}
+              בשנה. בוא נדבר.
+            </motion.p>
+            <a
+              href={WHATSAPP_ROI_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-primary text-primary-foreground font-medium hover:opacity-90 transition-opacity"
+            >
+              שיחת אבחון חינם
+            </a>
+          </motion.div>
+        )}
       </div>
     </section>
   );
