@@ -1,10 +1,15 @@
 import { Button } from "@/components/ui/button";
-import { MessageCircle, ChevronDown } from "lucide-react";
+import { MessageCircle, ChevronDown, Shield, BarChart3 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const WHATSAPP_URL = "https://wa.me/972524545963?text=היי%20ארז%2C%20אשמח%20לשיחת%20אבחון%20ראשונית";
 
 export function HeroSection() {
+  const navigate = useNavigate();
+  const scrollToROI = () => {
+    document.getElementById("roi-engine")?.scrollIntoView({ behavior: "smooth" });
+  };
   const scrollToNext = () => {
     document.getElementById("pain-section")?.scrollIntoView({ behavior: "smooth" });
   };
@@ -96,16 +101,26 @@ export function HeroSection() {
             transition={{ duration: 0.6, delay: 0.5 }}
             className="flex flex-col items-center gap-4 pt-4"
           >
-            <Button
-              size="lg"
-              asChild
-              className="gap-3 text-lg px-10 py-7 shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all hover:scale-[1.02]"
-            >
-              <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
-                <MessageCircle className="h-5 w-5" />
-                שיחת אבחון ראשונית — חינם
-              </a>
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Button
+                size="lg"
+                asChild
+                className="gap-3 text-lg px-10 py-7 shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all hover:scale-[1.02]"
+              >
+                <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
+                  <MessageCircle className="h-5 w-5" />
+                  שיחת אבחון ראשונית — חינם
+                </a>
+              </Button>
+              <Button variant="outline" size="lg" onClick={scrollToROI} className="gap-2 px-8 py-6">
+                <Shield className="h-5 w-5" />
+                חשב את עלות אי-העשייה
+              </Button>
+              <Button variant="ghost" size="lg" className="gap-2" onClick={() => navigate("/dashboard")}>
+                <BarChart3 className="h-4 w-4" />
+                דשבורד מערכתי
+              </Button>
+            </div>
             <p className="text-xs text-muted-foreground">
               15 דקות בוואטסאפ · אפס התחייבות · אפס מכירות
             </p>
