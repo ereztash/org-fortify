@@ -7,6 +7,7 @@ import { ASAEngine } from "@/components/dashboard/ASAEngine";
 import { TourniquetManager } from "@/components/dashboard/TourniquetManager";
 import { GanttChart } from "@/components/dashboard/GanttChart";
 import { GlassBoxLog } from "@/components/dashboard/GlassBoxLog";
+import { QuoteEngine } from "@/components/dashboard/QuoteEngine";
 
 const Dashboard = () => {
   const { user, signOut } = useAuth();
@@ -60,6 +61,9 @@ const Dashboard = () => {
           <GanttChart />
           <GlassBoxLog />
         </div>
+
+        {/* Quote Engine */}
+        <QuoteEngine />
       </main>
     </div>
   );
