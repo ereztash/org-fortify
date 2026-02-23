@@ -1,22 +1,23 @@
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Shield, BarChart3 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { MessageCircle, ChevronDown } from "lucide-react";
 import { motion } from "framer-motion";
 
+const WHATSAPP_URL = "https://wa.me/972524545963?text=היי%20ארז%2C%20אשמח%20לשיחת%20אבחון%20ראשונית";
+
 export function HeroSection() {
-  const navigate = useNavigate();
-  const scrollToROI = () => {
-    document.getElementById("roi-engine")?.scrollIntoView({ behavior: "smooth" });
+  const scrollToNext = () => {
+    document.getElementById("pain-section")?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-[95vh] flex items-center justify-center overflow-hidden">
       {/* Animated background grid */}
       <div className="absolute inset-0 opacity-5">
         <div
           className="h-full w-full"
           style={{
-            backgroundImage: "linear-gradient(hsl(var(--primary) / 0.3) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary) / 0.3) 1px, transparent 1px)",
+            backgroundImage:
+              "linear-gradient(hsl(var(--primary) / 0.3) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary) / 0.3) 1px, transparent 1px)",
             backgroundSize: "60px 60px",
           }}
         />
@@ -45,8 +46,8 @@ export function HeroSection() {
             transition={{ duration: 0.6 }}
             className="inline-flex items-center gap-2 glass rounded-full px-4 py-2 text-sm text-muted-foreground"
           >
-            <span className="h-2 w-2 rounded-full bg-primary animate-pulse-glow" />
-            <span>COR-SYS v3.4 — אבחון מערכתי פעיל</span>
+            <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+            <span>אבחון מערכתי ראשוני — ללא עלות, ללא התחייבות</span>
           </motion.div>
 
           {/* Main heading */}
@@ -56,16 +57,24 @@ export function HeroSection() {
             transition={{ duration: 0.7, delay: 0.15 }}
             className="text-4xl md:text-6xl lg:text-7xl font-bold font-display tracking-tight leading-tight"
           >
-            <span className="text-foreground">מתקנים את </span>
+            <span className="text-foreground">הארגון שלך </span>
             <motion.span
               className="text-primary inline-block"
-              animate={{ textShadow: ["0 0 8px hsl(var(--primary) / 0)", "0 0 20px hsl(var(--primary) / 0.4)", "0 0 8px hsl(var(--primary) / 0)"] }}
+              animate={{
+                textShadow: [
+                  "0 0 8px hsl(var(--primary) / 0)",
+                  "0 0 20px hsl(var(--primary) / 0.4)",
+                  "0 0 8px hsl(var(--primary) / 0)",
+                ],
+              }}
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
             >
-              המבנה
+              מדמם
             </motion.span>
             <br />
-            <span className="text-muted-foreground text-3xl md:text-4xl lg:text-5xl">לא את הנפש.</span>
+            <span className="text-muted-foreground text-3xl md:text-4xl lg:text-5xl">
+              ואף אחד לא יודע מאיפה.
+            </span>
           </motion.h1>
 
           {/* Description */}
@@ -75,34 +84,48 @@ export function HeroSection() {
             transition={{ duration: 0.6, delay: 0.35 }}
             className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed"
           >
-            מערכת אבחון וחוסן ארגוני המבצעת התמרה אונטולוגית —
-            מזהה כשלים מבניים, מחשבת עלות אי-עשייה, ומתקנת בזמן אמת.
+            אני מאתר את הנקודה המדויקת שבה המשאבים דולפים,
+            <br className="hidden md:block" />
+            ועוצר את הדימום תוך 14 יום. בלי קוסמטיקה. בלי באזוורדס.
           </motion.p>
 
-          {/* CTA */}
+          {/* Primary CTA */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4"
+            className="flex flex-col items-center gap-4 pt-4"
           >
-            <Button size="lg" onClick={scrollToROI} className="gap-2 text-base px-8 py-6 shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-shadow">
-              <Shield className="h-5 w-5" />
-              חשב את עלות אי-העשייה
+            <Button
+              size="lg"
+              asChild
+              className="gap-3 text-lg px-10 py-7 shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all hover:scale-[1.02]"
+            >
+              <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
+                <MessageCircle className="h-5 w-5" />
+                שיחת אבחון ראשונית — חינם
+              </a>
             </Button>
-            <Button variant="ghost" size="lg" className="gap-2 text-muted-foreground" onClick={() => document.getElementById("architect")?.scrollIntoView({ behavior: "smooth" })}>
-              הכר את הארכיטקט
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" size="lg" className="gap-2" onClick={() => navigate("/dashboard")}>
-              <BarChart3 className="h-4 w-4" />
-              דשבורד מערכתי
-            </Button>
+            <p className="text-xs text-muted-foreground">
+              15 דקות בוואטסאפ · אפס התחייבות · אפס מכירות
+            </p>
           </motion.div>
         </div>
       </div>
 
-      {/* Bottom fade gradient */}
+      {/* Scroll indicator */}
+      <motion.button
+        onClick={scrollToNext}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1, y: [0, 8, 0] }}
+        transition={{ opacity: { delay: 1.5 }, y: { duration: 2, repeat: Infinity, ease: "easeInOut" } }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 text-muted-foreground hover:text-primary transition-colors"
+        aria-label="גלול למטה"
+      >
+        <ChevronDown className="h-6 w-6" />
+      </motion.button>
+
+      {/* Bottom fade */}
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
     </section>
   );
