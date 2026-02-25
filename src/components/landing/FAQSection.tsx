@@ -5,6 +5,10 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { MessageCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+const WHATSAPP_URL = "https://wa.me/972524545963?text=היי%20ארז%2C%20אשמח%20לשיחת%20אבחון%20ראשונית";
 
 const faqs = [
   {
@@ -39,16 +43,16 @@ const faqs = [
 
 export function FAQSection() {
   return (
-    <section id="faq-section" className="py-24 px-6">
-      <div className="container max-w-3xl mx-auto space-y-10">
+    <section id="faq-section" className="py-28 px-6 section-divider">
+      <div className="container max-w-3xl mx-auto space-y-12">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.6 }}
-          className="text-center space-y-3"
+          className="text-center space-y-4"
         >
-          <h2 className="text-3xl md:text-4xl font-bold font-display">שאלות שכולם שואלים</h2>
+          <h2 className="text-3xl md:text-5xl font-bold font-display">שאלות שכולם שואלים</h2>
           <p className="text-muted-foreground text-lg">תשובות כנות. בלי שיווק.</p>
         </motion.div>
 
@@ -63,7 +67,7 @@ export function FAQSection() {
               <AccordionItem
                 key={i}
                 value={`faq-${i}`}
-                className="glass rounded-xl border-border/30 px-5"
+                className="glass rounded-xl border-border/20 px-5 hover:border-primary/20 transition-colors data-[state=open]:glow-primary"
               >
                 <AccordionTrigger className="text-base font-medium text-foreground hover:text-primary transition-colors py-5 text-right">
                   {faq.q}
@@ -74,6 +78,23 @@ export function FAQSection() {
               </AccordionItem>
             ))}
           </Accordion>
+        </motion.div>
+
+        {/* Mini CTA after FAQ */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.3 }}
+          className="text-center pt-4"
+        >
+          <p className="text-muted-foreground mb-4">לא מצאת תשובה? דבר איתי ישירות.</p>
+          <Button variant="outline" size="lg" asChild className="gap-2 border-border/30 hover:border-primary/40">
+            <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
+              <MessageCircle className="h-4 w-4" />
+              שאל אותי בוואטסאפ
+            </a>
+          </Button>
         </motion.div>
       </div>
     </section>
