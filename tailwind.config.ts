@@ -16,6 +16,7 @@ export default {
       fontFamily: {
         hebrew: ['"IBM Plex Sans Hebrew"', 'sans-serif'],
         display: ['"Space Grotesk"', 'sans-serif'],
+        serif: ['"Playfair Display"', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",

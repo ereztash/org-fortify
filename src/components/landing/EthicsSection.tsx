@@ -41,17 +41,19 @@ const dontWorkWith = [
 
 export function EthicsSection() {
   return (
-    <section className="py-24 px-6 scroll-mt-20">
-      <div className="container max-w-4xl mx-auto space-y-12">
+    <section className="py-28 px-6 scroll-mt-20 section-divider">
+      <div className="container max-w-4xl mx-auto space-y-14">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.6 }}
-          className="text-center space-y-3"
+          className="text-center space-y-4"
         >
-          <p className="text-sm text-primary font-medium tracking-wider">ההתחייבויות שלי</p>
-          <h2 className="text-3xl md:text-4xl font-bold font-display">הגינות קודמת לעסקים</h2>
+          <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-medium bg-primary/10 text-primary border border-primary/20">
+            ההתחייבויות שלי
+          </div>
+          <h2 className="text-3xl md:text-5xl font-bold font-display">הגינות קודמת לעסקים</h2>
           <p className="text-muted-foreground max-w-lg mx-auto text-lg">
             בעולם מלא במילים גדולות ובהבטחות ריקות, אני מתחייב לסטנדרט אחר.
           </p>
@@ -65,13 +67,17 @@ export function EthicsSection() {
           transition={{ duration: 0.5 }}
           className="flex flex-wrap justify-center gap-3"
         >
-          {antiPatterns.map((item) => (
-            <span
+          {antiPatterns.map((item, i) => (
+            <motion.span
               key={item}
-              className="px-4 py-2 rounded-full border border-border/50 text-sm text-muted-foreground line-through decoration-destructive/60"
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.06 }}
+              className="px-4 py-2 rounded-full border border-border/30 text-sm text-muted-foreground/60 line-through decoration-destructive/50 bg-secondary/30"
             >
               {item}
-            </span>
+            </motion.span>
           ))}
         </motion.div>
 
@@ -83,10 +89,10 @@ export function EthicsSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
-              className="glass rounded-2xl p-6 space-y-3 hover:border-primary/30 transition-colors duration-300"
+              className="glass rounded-2xl p-6 space-y-3 card-hover group"
             >
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary/10">
+                <div className="p-2.5 rounded-xl bg-primary/10 border border-primary/10 group-hover:glow-primary transition-shadow">
                   <c.icon className="h-5 w-5 text-primary" />
                 </div>
                 <h3 className="font-semibold font-display text-foreground">{c.title}</h3>
@@ -102,23 +108,24 @@ export function EthicsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="glass rounded-2xl p-6 md:p-8 space-y-4"
+          className="glass rounded-2xl p-6 md:p-8 space-y-4 relative overflow-hidden"
         >
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-destructive/30 to-transparent" />
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-destructive/10">
+            <div className="p-2.5 rounded-xl bg-destructive/10 border border-destructive/10">
               <Ban className="h-5 w-5 text-destructive" />
             </div>
             <h3 className="font-semibold font-display text-foreground">אני לא עובד עם חברות ש...</h3>
           </div>
           <div className="grid sm:grid-cols-2 gap-3">
             {dontWorkWith.map((item) => (
-              <div key={item} className="flex items-start gap-2 text-muted-foreground">
-                <span className="text-destructive mt-0.5">✕</span>
+              <div key={item} className="flex items-start gap-2.5 text-muted-foreground">
+                <span className="text-destructive mt-0.5 text-sm">✕</span>
                 <span>{item}</span>
               </div>
             ))}
           </div>
-          <p className="text-sm text-muted-foreground/70 pt-2">
+          <p className="text-sm text-muted-foreground/50 pt-2 border-t border-border/20">
             זה לא יהירות. זה כבוד הדדי לזמן שלך ושלי.
           </p>
         </motion.div>

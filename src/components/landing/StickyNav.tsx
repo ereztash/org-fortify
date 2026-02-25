@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircle, BarChart3, BookOpen } from "lucide-react";
+import { MessageCircle, BarChart3, BookOpen, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
@@ -14,6 +14,7 @@ const navLinks = [
 
 export function StickyNav() {
   const [visible, setVisible] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,6 +27,7 @@ export function StickyNav() {
 
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    setMobileOpen(false);
   };
 
   return (
@@ -36,38 +38,77 @@ export function StickyNav() {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -60, opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="fixed top-0 left-0 right-0 z-50 glass border-b border-border/20"
+          className="fixed top-0 left-0 right-0 z-50 glass-strong border-b border-border/10"
         >
           <div className="container max-w-5xl mx-auto flex items-center justify-between px-4 py-3">
-            <span className="text-sm font-semibold font-display text-foreground">ארז טל שיר</span>
+            <span className="text-sm font-semibold font-display text-foreground">
+              ארז טל שיר
+            </span>
 
-            <div className="hidden sm:flex items-center gap-4">
+            <div className="hidden sm:flex items-center gap-1">
               {navLinks.map((link) => (
                 <button
                   key={link.id}
                   onClick={() => scrollTo(link.id)}
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors px-3 py-1.5 rounded-lg hover:bg-primary/5"
                 >
                   {link.label}
                 </button>
               ))}
-              <Button variant="outline" size="sm" onClick={() => navigate("/dashboard")} className="gap-1.5 text-xs">
+              <div className="w-px h-5 bg-border/30 mx-2" />
+              <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")} className="gap-1.5 text-xs">
                 <BarChart3 className="h-3.5 w-3.5" />
-                לאבחון מהיר
-              </Button>
-              <Button variant="ghost" size="sm" onClick={() => scrollTo("architect")} className="gap-1.5 text-xs">
-                <BookOpen className="h-3.5 w-3.5" />
-                לעומק המחקר
+                דשבורד
               </Button>
             </div>
 
-            <Button size="sm" asChild className="gap-2 text-xs">
-              <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
-                <MessageCircle className="h-4 w-4" />
-                <span className="hidden sm:inline">דבר איתי</span>
-              </a>
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button size="sm" asChild className="gap-2 text-xs shadow-sm shadow-primary/20">
+                <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
+                  <MessageCircle className="h-4 w-4" />
+                  <span className="hidden sm:inline">דבר איתי</span>
+                </a>
+              </Button>
+
+              {/* Mobile menu toggle */}
+              <button
+                onClick={() => setMobileOpen(!mobileOpen)}
+                className="sm:hidden text-muted-foreground hover:text-primary transition-colors p-1"
+                aria-label="תפריט"
+              >
+                {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </button>
+            </div>
           </div>
+
+          {/* Mobile menu */}
+          <AnimatePresence>
+            {mobileOpen && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="sm:hidden border-t border-border/10 overflow-hidden"
+              >
+                <div className="flex flex-col gap-1 p-3">
+                  {navLinks.map((link) => (
+                    <button
+                      key={link.id}
+                      onClick={() => scrollTo(link.id)}
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors px-3 py-2.5 rounded-lg hover:bg-primary/5 text-right"
+                    >
+                      {link.label}
+                    </button>
+                  ))}
+                  <Button variant="ghost" size="sm" onClick={() => { navigate("/dashboard"); setMobileOpen(false); }} className="gap-1.5 text-xs justify-start">
+                    <BarChart3 className="h-3.5 w-3.5" />
+                    דשבורד
+                  </Button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.nav>
       )}
     </AnimatePresence>
