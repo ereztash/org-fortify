@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 export function BridgeSection() {
   return (
     <section className="relative py-20 px-6 overflow-hidden">
-      {/* Gradient background: destructive → primary */}
       <div
         className="absolute inset-0 opacity-[0.07]"
         style={{
@@ -19,12 +18,15 @@ export function BridgeSection() {
         className="relative z-10 container max-w-2xl mx-auto text-center space-y-4"
       >
         <p className="text-2xl md:text-3xl font-display font-bold leading-relaxed text-foreground">
-          הבעיה לא בך.
+          הבעיה היא לא האנשים.
           <br />
-          הבעיה <span className="text-primary">במבנה</span>.
+          הבעיה היא <span className="text-primary">המבנה</span>.
         </p>
         <p className="text-lg text-muted-foreground">
-          ואת המבנה אפשר לתקן.
+          מודל COR-SYS מבוסס על מחקר של 100 ארגונים ו-10,000 סימולציות.
+        </p>
+        <p className="text-sm text-muted-foreground/70">
+          J-Quotient = C / E — יחס הקיבולת לאנטרופיה. סף שבירה: כש-E עולה על 65% מ-C, הסתברות הקריסה עולה ב-300%.
         </p>
       </motion.div>
     </section>

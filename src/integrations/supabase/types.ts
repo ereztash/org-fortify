@@ -99,6 +99,36 @@ export type Database = {
           },
         ]
       }
+      leads: {
+        Row: {
+          created_at: string
+          delta_potential: number | null
+          email: string
+          id: string
+          name: string
+          org_name: string | null
+          phone: string | null
+        }
+        Insert: {
+          created_at?: string
+          delta_potential?: number | null
+          email: string
+          id?: string
+          name: string
+          org_name?: string | null
+          phone?: string | null
+        }
+        Update: {
+          created_at?: string
+          delta_potential?: number | null
+          email?: string
+          id?: string
+          name?: string
+          org_name?: string | null
+          phone?: string | null
+        }
+        Relationships: []
+      }
       organizations: {
         Row: {
           created_at: string

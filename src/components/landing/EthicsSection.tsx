@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Eye, Lock, Scale, HeartHandshake } from "lucide-react";
+import { Eye, Lock, Scale, HeartHandshake, Ban } from "lucide-react";
 
 const commitments = [
   {
@@ -30,6 +30,13 @@ const antiPatterns = [
   "לא מצגת של 80 עמודים",
   "לא באזוורדס",
   "לא תלות ביועץ",
+];
+
+const dontWorkWith = [
+  "מחפשות פתרון קוסמטי בלבד",
+  "לא מוכנות לשקיפות פנימית",
+  "מצפות לתוצאות בלי להשקיע זמן של ההנהלה",
+  "רוצות דוח למגירה ולא שינוי אמיתי",
 ];
 
 export function EthicsSection() {
@@ -88,6 +95,33 @@ export function EthicsSection() {
             </motion.div>
           ))}
         </div>
+
+        {/* Don't work with */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="glass rounded-2xl p-6 md:p-8 space-y-4"
+        >
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-destructive/10">
+              <Ban className="h-5 w-5 text-destructive" />
+            </div>
+            <h3 className="font-semibold font-display text-foreground">אני לא עובד עם חברות ש...</h3>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-3">
+            {dontWorkWith.map((item) => (
+              <div key={item} className="flex items-start gap-2 text-sm text-muted-foreground">
+                <span className="text-destructive mt-0.5">✕</span>
+                <span>{item}</span>
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground/70 pt-2">
+            זה לא יהירות. זה כבוד הדדי לזמן שלך ושלי.
+          </p>
+        </motion.div>
       </div>
     </section>
   );
