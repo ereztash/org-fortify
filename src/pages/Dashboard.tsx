@@ -12,6 +12,7 @@ import { QuoteEngine } from "@/components/dashboard/QuoteEngine";
 import { ProfileCard } from "@/components/dashboard/ProfileCard";
 import { WhatsAppFAB } from "@/components/dashboard/WhatsAppFAB";
 import { ROISliders } from "@/components/dashboard/ROISliders";
+import { BenchmarkingEngine } from "@/components/dashboard/BenchmarkingEngine";
 
 const stagger = {
   hidden: {},
@@ -24,7 +25,7 @@ const fadeUp = {
 };
 
 const Dashboard = () => {
-  const { deltaPotential, healthLevel } = useCOR();
+  const { deltaPotential, healthLevel, jQuotient } = useCOR();
   const navigate = useNavigate();
 
   return (
@@ -47,7 +48,6 @@ const Dashboard = () => {
         animate="show"
         className="container max-w-7xl mx-auto p-6 space-y-6"
       >
-        {/* Profile */}
         <ProfileCard />
 
         {/* Top row — Health + Summary */}
@@ -56,16 +56,18 @@ const Dashboard = () => {
             <HealthGauge />
           </div>
           <div className="glass rounded-2xl p-6 col-span-1 md:col-span-2 flex items-center gap-6">
-            <div className="space-y-2">
+            <div className="space-y-2 flex-1">
               <p className="text-sm text-muted-foreground">עלות אי-עשייה שנתית</p>
               <div className="flex items-baseline gap-2">
                 <TrendingUp className="w-5 h-5 text-destructive" />
                 <span className="text-3xl font-bold font-display text-foreground">
-                  ₪{deltaPotential.toLocaleString()}
+                  ₪{deltaPotential.toLocaleString("he-IL", { maximumFractionDigits: 0 })}
                 </span>
               </div>
               <p className="text-xs text-muted-foreground">
-                מצב מערכתי: <span className="text-primary font-medium">{healthLevel}</span>
+                J-Quotient: <span className="text-primary font-medium">{jQuotient.toFixed(2)}</span>
+                {" · "}
+                מצב: <span className="text-primary font-medium">{healthLevel}</span>
               </p>
             </div>
           </div>
@@ -80,6 +82,11 @@ const Dashboard = () => {
         <motion.div variants={fadeUp} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <GanttChart />
           <GlassBoxLog />
+        </motion.div>
+
+        {/* Benchmarking */}
+        <motion.div variants={fadeUp}>
+          <BenchmarkingEngine />
         </motion.div>
 
         {/* ROI Sliders + Quote Engine */}
