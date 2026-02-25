@@ -23,10 +23,10 @@ export function BridgeSection() {
           הבעיה היא <span className="text-primary">המבנה</span>.
         </p>
         <p className="text-lg text-muted-foreground">
-          מודל COR-SYS מבוסס על מחקר של 100 ארגונים ו-10,000 סימולציות.
+          המודל שלי מבוסס על בדיקה של 100 ארגונים ו-10,000 סימולציות.
         </p>
         <p className="text-sm text-muted-foreground/70">
-          J-Quotient = C / E: יחס הקיבולת לאנטרופיה. סף שבירה: כש-E עולה על 65% מ-C, הסתברות הקריסה עולה ב-300%.
+          אני מודד את יחס היציבות של הארגון: כמה משאבים יש לך מול כמה בזבוז קיים. כשהבזבוז עולה על 65% מהמשאבים, הסיכון לקריסה עולה פי 3.
         </p>
       </motion.div>
     </section>
