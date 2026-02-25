@@ -145,7 +145,7 @@ export function HeroSection() {
             </div>
             <div className="inline-flex items-center gap-1.5 glass rounded-full px-4 py-2 text-xs text-muted-foreground">
               <TrendingUp className="h-3.5 w-3.5 text-primary" />
-              חסכתי ללקוחות מעל 2M$ בשנה
+              הגדלתי הכנסות של רשת קמעונאית ב-₪1M בשנה
             </div>
           </motion.div>
 
