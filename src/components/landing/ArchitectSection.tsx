@@ -4,20 +4,20 @@ import erezPhoto from "@/assets/erez-profile.png";
 
 const manifesto = [
   {
-    label: "ספירלת אובדן",
-    desc: "אובדן משאבים כואב פי 2 מרווח. נעצור את ספירלת האובדן לפני שהיא בולעת את הארגון.",
+    label: "עצירת הדימום קודמת",
+    desc: "להפסיד משאבים כואב פי 2 מלהרוויח. קודם כל עוצרים את הבזבוז, ואז בונים צמיחה.",
   },
   {
-    label: "אותות חלשים",
-    desc: "כל סטייה קטנה היא אות חלש לאנטרופיה. לא נתעלם, נמדוד ונפעל.",
+    label: "קשב לסימנים מוקדמים",
+    desc: "כל סטייה קטנה היא סימן אזהרה. לא מתעלמים, מודדים ופועלים בזמן.",
   },
   {
-    label: "Bouncing Forward",
-    desc: "חוסן זה לא לחזור למצב הקודם, זה לזנק קדימה. ספירלת רווח במקום ספירלת אובדן.",
+    label: "לזנק קדימה, לא לחזור אחורה",
+    desc: "המטרה היא לא לחזור למצב הקודם, אלא ליצור מצב טוב יותר ממה שהיה.",
   },
   {
-    label: "Glass Box",
-    desc: "שקיפות מוחלטת: כל נוסחה, כל הנחה, כל מספר גלויים. אתה רואה בדיוק איך הגעתי למסקנה.",
+    label: "שקיפות מלאה",
+    desc: "כל חישוב, כל הנחה, כל מספר גלויים לך. אתה רואה בדיוק איך הגעתי לכל מסקנה.",
   },
 ];
 
@@ -58,25 +58,24 @@ export function ArchitectSection() {
                 מי עומד מאחורי זה
               </motion.p>
               <h2 className="text-3xl md:text-4xl font-bold font-display">ארז טל שיר</h2>
-              <p className="text-primary font-medium">מומחה לחוסן ארגוני ואנטרופיה מערכתית · מייסד COR-SYS</p>
+              <p className="text-primary font-medium">מומחה לחוסן ארגוני ויציבות מערכתית</p>
             </div>
           </div>
 
           {/* Bio */}
-          <div className="space-y-4 text-muted-foreground leading-relaxed">
+          <div className="space-y-4 text-muted-foreground leading-relaxed text-lg">
             <p>
-              עובד סוציאלי מהמסורת המערכתית. מומחה להנדסת תהליכים בארגוני Scale-up.
+              רקע בעבודה סוציאלית מערכתית. מתמחה בשיפור תהליכים בארגונים בצמיחה מהירה.
             </p>
             <p>
-              אני לא מטפל באנשים, אני מרפא את <span className="text-foreground font-medium">המבנה</span> שבו הם פועלים.
-              באמצעות מתודולוגיית <span className="text-primary font-medium">"העדשה הכפולה"</span>, אני מאתר
-              משאבים שדולפים עקב נורמליזציה של סטייה ניהולית, ומטמיע חוסמי עורקים טכנולוגיים לעצירת הדימום.
+              אני לא מטפל באנשים. אני מתקן את <span className="text-foreground font-medium">המבנה</span> שבו הם עובדים.
+              אני מאתר משאבים שהולכים לאיבוד בגלל הרגלי עבודה שגויים, ומטמיע פתרונות שעוצרים את הבזבוז.
             </p>
           </div>
 
           {/* Research Manifesto */}
           <div>
-            <p className="text-sm text-primary font-medium mb-4 tracking-wider">מניפסט מחקרי: 4 עקרונות</p>
+            <p className="text-sm text-primary font-medium mb-4 tracking-wider">4 עקרונות מנחים</p>
             <div className="grid sm:grid-cols-2 gap-4">
               {manifesto.map((v, i) => (
                 <motion.div
@@ -87,8 +86,8 @@ export function ArchitectSection() {
                   transition={{ delay: 0.3 + i * 0.1 }}
                   className="bg-secondary/50 rounded-xl p-4 space-y-1 border border-border/50"
                 >
-                  <p className="text-sm font-semibold text-primary">{v.label}</p>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{v.desc}</p>
+                  <p className="font-semibold text-primary">{v.label}</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{v.desc}</p>
                 </motion.div>
               ))}
             </div>
@@ -102,8 +101,8 @@ export function ArchitectSection() {
             transition={{ duration: 0.8, delay: 0.8 }}
             className="border-t border-border/50 pt-6"
           >
-            <p className="text-sm text-muted-foreground italic">
-              "14 יום משנים את המשוואה. לא סתם ייעוץ, הנדסת חוסן."
+            <p className="text-muted-foreground italic">
+              "14 יום שמשנים את התמונה. לא עוד ייעוץ רגיל, אלא בדיקה מעמיקה ותיקון ממוקד."
             </p>
           </motion.div>
         </motion.div>

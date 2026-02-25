@@ -8,26 +8,26 @@ const steps = [
   {
     icon: Search,
     day: "ימים 1-3",
-    title: "אבחון מהיר (ASA Engine)",
-    desc: "ניתוח סוקרטי כפול-עדשה: זיהוי נרמול סטייה, סתירות לוגיות, וכשלים מבניים. מיפוי נקודות הדליפה.",
+    title: "בדיקה מהירה",
+    desc: "שיחות ממוקדות עם אנשי מפתח. זיהוי הדפוסים שגורמים לבזבוז: היכן הזמן מתבזבז, איפה ההחלטות נתקעות, ומה חוזר על עצמו.",
   },
   {
     icon: Activity,
     day: "ימים 3-5",
-    title: "ניתוח J-Quotient וסף שבירה",
-    desc: "חישוב יחס החוסן J = C/E. זיהוי אם הארגון חצה את סף השבירה האנטרופי (0.65). כימות עלות אי-העשייה.",
+    title: "מדידת יציבות ועלויות",
+    desc: "חישוב מדויק של יחס היציבות הארגונית. בדיקה האם הארגון חצה את סף הסיכון. תרגום של כל ממצא למספרים בשקלים.",
   },
   {
     icon: Syringe,
     day: "ימים 5-10",
-    title: "התערבות ממוקדת (Tourniquets)",
-    desc: "הטמעת חוסמי עורקים: התערבויות כירורגיות בנקודות הדימום. פעולות מדידות שעוצרות דליפה מיד.",
+    title: "תיקון ממוקד",
+    desc: "התערבויות קצרות ומדויקות בנקודות הבעיה. כל תיקון מדיד: אתה יודע בדיוק כמה כסף הוא חוסך לך.",
   },
   {
     icon: ShieldCheck,
     day: "ימים 11-14",
-    title: "מדידה חוזרת וייצוב",
-    desc: "אימות שהדימום נעצר. מדידת שיפור ב-J-Quotient. העברת שליטה מלאה לצוות, בלי תלות.",
+    title: "בדיקה חוזרת וסיום",
+    desc: "וידוא שהבעיות נפתרו. מדידת השיפור. העברת שליטה מלאה לצוות שלך, בלי תלות חיצונית.",
   },
 ];
 
@@ -46,8 +46,8 @@ export function HowItWorksSection() {
         >
           <p className="text-sm text-primary font-medium tracking-wider">14 יום. לא 14 חודש.</p>
           <h2 className="text-3xl md:text-4xl font-bold font-display">איך זה עובד</h2>
-          <p className="text-muted-foreground max-w-lg mx-auto">
-            ספרינט אבחוני: כניסה, מדידה, תיקון, אימות. בלי תלות, בלי ריטיינר אינסופי.
+          <p className="text-muted-foreground max-w-lg mx-auto text-lg">
+            נכנסים, בודקים, מתקנים, מוודאים. בלי תלות, בלי תשלום חודשי אינסופי.
           </p>
         </motion.div>
 
@@ -71,7 +71,7 @@ export function HowItWorksSection() {
               </div>
               <div className="space-y-2">
                 <h3 className="text-lg font-semibold font-display text-foreground">{step.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{step.desc}</p>
+                <p className="text-muted-foreground leading-relaxed">{step.desc}</p>
               </div>
             </motion.div>
           ))}
@@ -94,7 +94,7 @@ export function HowItWorksSection() {
               בוא נבדוק אם זה רלוונטי לך
             </a>
           </Button>
-          <p className="text-xs text-muted-foreground mt-3">שיחה של 15 דקות. אם לא רלוונטי, אגיד לך.</p>
+          <p className="text-sm text-muted-foreground mt-3">שיחה של 15 דקות. אם לא רלוונטי, אגיד לך.</p>
         </motion.div>
       </div>
     </section>

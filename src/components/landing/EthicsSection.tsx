@@ -4,31 +4,31 @@ import { Eye, Lock, Scale, HeartHandshake, Ban } from "lucide-react";
 const commitments = [
   {
     icon: Eye,
-    title: "Glass Box, לא Black Box",
-    desc: "כל מודל, כל חישוב, כל המלצה, שקופים לחלוטין. אתה רואה בדיוק איך הגעתי למסקנה.",
+    title: "שקיפות מלאה",
+    desc: "כל חישוב, כל המלצה, כל מסקנה גלויים לך. אתה רואה בדיוק איך הגעתי לכל מספר.",
   },
   {
     icon: Lock,
     title: "אפס ניגוד אינטרסים",
-    desc: "אני לא מוכר תוכנה, לא מוכר הדרכות, ולא מרוויח מזה שתישאר תלוי בי. ההצלחה שלי = שלא תצטרך אותי.",
+    desc: "אני לא מוכר תוכנה, לא מוכר הדרכות, ולא מרוויח מזה שתישאר תלוי בי. ההצלחה שלי היא שלא תצטרך אותי.",
   },
   {
     icon: Scale,
-    title: "אתיקה מקצועית",
-    desc: "אם האבחון מראה שאתה לא צריך אותי, אגיד לך. אני לא ממציא בעיות כדי למכור פתרונות.",
+    title: "כנות מקצועית",
+    desc: "אם הבדיקה מראה שאתה לא צריך אותי, אגיד לך. אני לא ממציא בעיות כדי למכור פתרונות.",
   },
   {
     icon: HeartHandshake,
     title: "הגינות כלכלית",
-    desc: "אבחון ראשוני חינם. אם לא הוכחתי ערך מדיד, לא שילמת. פשוט.",
+    desc: "בדיקה ראשונית חינם. אם לא הוכחתי ערך מדיד, לא שילמת. פשוט.",
   },
 ];
 
 const antiPatterns = [
-  "לא מוכר הדרכות",
-  "לא ריטיינר חודשי",
+  "לא הדרכות",
+  "לא תשלום חודשי קבוע",
   "לא מצגת של 80 עמודים",
-  "לא באזוורדס",
+  "לא מילים גדולות בלי תוכן",
   "לא תלות ביועץ",
 ];
 
@@ -51,9 +51,9 @@ export function EthicsSection() {
           className="text-center space-y-3"
         >
           <p className="text-sm text-primary font-medium tracking-wider">ההתחייבויות שלי</p>
-          <h2 className="text-3xl md:text-4xl font-bold font-display">אתיקה קודמת לעסקים</h2>
-          <p className="text-muted-foreground max-w-lg mx-auto">
-            בעולם מלא באגו של יועצים ובאזוורדס, אני מתחייב לסטנדרט אחר.
+          <h2 className="text-3xl md:text-4xl font-bold font-display">הגינות קודמת לעסקים</h2>
+          <p className="text-muted-foreground max-w-lg mx-auto text-lg">
+            בעולם מלא במילים גדולות ובהבטחות ריקות, אני מתחייב לסטנדרט אחר.
           </p>
         </motion.div>
 
@@ -91,7 +91,7 @@ export function EthicsSection() {
                 </div>
                 <h3 className="font-semibold font-display text-foreground">{c.title}</h3>
               </div>
-              <p className="text-sm text-muted-foreground leading-relaxed">{c.desc}</p>
+              <p className="text-muted-foreground leading-relaxed">{c.desc}</p>
             </motion.div>
           ))}
         </div>
@@ -112,13 +112,13 @@ export function EthicsSection() {
           </div>
           <div className="grid sm:grid-cols-2 gap-3">
             {dontWorkWith.map((item) => (
-              <div key={item} className="flex items-start gap-2 text-sm text-muted-foreground">
+              <div key={item} className="flex items-start gap-2 text-muted-foreground">
                 <span className="text-destructive mt-0.5">✕</span>
                 <span>{item}</span>
               </div>
             ))}
           </div>
-          <p className="text-xs text-muted-foreground/70 pt-2">
+          <p className="text-sm text-muted-foreground/70 pt-2">
             זה לא יהירות. זה כבוד הדדי לזמן שלך ושלי.
           </p>
         </motion.div>
