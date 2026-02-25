@@ -14,7 +14,7 @@ export function GlassBoxLog() {
       <CardHeader>
         <CardTitle className="text-lg flex items-center gap-2">
           <Eye className="w-5 h-5 text-primary" />
-          Glass Box — שרשרת הסקה מלאה
+          Glass Box: שרשרת הסקה מלאה
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3 text-sm font-mono">

@@ -42,7 +42,7 @@ serve(async (req) => {
   .quote-box .price { font-size: 36px; font-weight: bold; color: #34d399; }
 </style></head>
 <body>
-  <h1>COR-SYS v3.4 — הצעת ספרינט אבחוני</h1>
+  <h1>COR-SYS v3.4: הצעת ספרינט אבחוני</h1>
   <p style="color:#64748b;">תאריך: ${date} | ארגון: ${orgName || 'לא צוין'}</p>
 
   <h2>מדדי ROI</h2>
@@ -54,7 +54,7 @@ serve(async (req) => {
   </div>
 
   <div class="metric" style="display:block;margin-top:16px;">
-    <div class="label">ΔPotential — עלות אי-עשייה שנתית</div>
+    <div class="label">ΔPotential: עלות אי-עשייה שנתית</div>
     <div class="value" style="font-size:36px;">₪${(deltaPotential || 0).toLocaleString()}</div>
     <div class="label">Health Score: ${(healthScore || 0).toFixed(0)}/100</div>
   </div>
@@ -72,7 +72,7 @@ serve(async (req) => {
   </div>
 
   <div class="footer">
-    <p>COR-SYS v3.4 — מערכת אבחון וחוסן ארגוני</p>
+    <p>COR-SYS v3.4: מערכת אבחון וחוסן ארגוני</p>
     <p>המערכת מסנכרנת חוסן. המסמך נוצר אוטומטית.</p>
   </div>
 </body></html>`;

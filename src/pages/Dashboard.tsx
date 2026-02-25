@@ -50,7 +50,7 @@ const Dashboard = () => {
       >
         <ProfileCard />
 
-        {/* Top row — Health + Summary */}
+        {/* Top row: Health + Summary */}
         <motion.div variants={fadeUp} className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="glass rounded-2xl p-6 flex items-center justify-center">
             <HealthGauge />

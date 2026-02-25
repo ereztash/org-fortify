@@ -29,7 +29,7 @@ export function BenchmarkingEngine() {
       <CardHeader>
         <CardTitle className="text-lg flex items-center gap-2">
           <BarChart3 className="w-5 h-5 text-primary" />
-          Benchmarking — מול 100 ארגונים
+          Benchmarking: מול 100 ארגונים
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-5">

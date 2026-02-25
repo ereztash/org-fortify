@@ -15,7 +15,7 @@ interface AIInsight {
 }
 
 const guidedQuestions = [
-  "תאר את תהליך קבלת ההחלטות בארגון שלך — מי מחליט, כמה זמן לוקח, ומה קורה כשיש חילוקי דעות?",
+  "תאר את תהליך קבלת ההחלטות בארגון שלך: מי מחליט, כמה זמן לוקח, ומה קורה כשיש חילוקי דעות?",
   "כמה חריגות בטיחות / תפעול אושרו בחודש האחרון? האם יש דפוס חוזר?",
   "איזה מסרים אתם משדרים לשוק, ומה צוותי הפיתוח עושים בפועל? יש פער?",
 ];
@@ -84,13 +84,13 @@ export function ASAEngine({ orgId }: { orgId?: string }) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
             <Brain className="w-5 h-5 text-primary" />
-            ASA — ניתוח סוקרטי כפול-עדשה
+            ASA: ניתוח סוקרטי כפול-עדשה
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Guided Questions */}
           <div className="space-y-2">
-            <p className="text-xs text-muted-foreground font-medium">שאלות מנחות — לחץ כדי להוסיף לניתוח:</p>
+            <p className="text-xs text-muted-foreground font-medium">שאלות מנחות, לחץ כדי להוסיף לניתוח:</p>
             <div className="flex flex-wrap gap-2">
               {guidedQuestions.map((q, i) => (
                 <button
@@ -105,7 +105,7 @@ export function ASAEngine({ orgId }: { orgId?: string }) {
           </div>
 
           <Textarea
-            placeholder="הדבק טקסט ארגוני לניתוח — פרוטוקול ישיבה, דוח, תלונה, או ענה על השאלות המנחות..."
+            placeholder="הדבק טקסט ארגוני לניתוח: פרוטוקול ישיבה, דוח, תלונה, או ענה על השאלות המנחות..."
             value={text}
             onChange={(e) => setText(e.target.value)}
             className="min-h-[120px] bg-background/50"

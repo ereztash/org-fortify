@@ -5,19 +5,19 @@ import erezPhoto from "@/assets/erez-profile.png";
 const manifesto = [
   {
     label: "ספירלת אובדן",
-    desc: "אובדן משאבים כואב פי 2 מרווח — נעצור את ספירלת האובדן לפני שהיא בולעת את הארגון.",
+    desc: "אובדן משאבים כואב פי 2 מרווח. נעצור את ספירלת האובדן לפני שהיא בולעת את הארגון.",
   },
   {
     label: "אותות חלשים",
-    desc: "כל סטייה קטנה היא אות חלש לאנטרופיה — לא נתעלם, נמדוד ונפעל.",
+    desc: "כל סטייה קטנה היא אות חלש לאנטרופיה. לא נתעלם, נמדוד ונפעל.",
   },
   {
     label: "Bouncing Forward",
-    desc: "חוסן זה לא לחזור למצב הקודם — זה לזנק קדימה. ספירלת רווח במקום ספירלת אובדן.",
+    desc: "חוסן זה לא לחזור למצב הקודם, זה לזנק קדימה. ספירלת רווח במקום ספירלת אובדן.",
   },
   {
     label: "Glass Box",
-    desc: "שקיפות מוחלטת — כל נוסחה, כל הנחה, כל מספר גלויים. אתה רואה בדיוק איך הגעתי למסקנה.",
+    desc: "שקיפות מוחלטת: כל נוסחה, כל הנחה, כל מספר גלויים. אתה רואה בדיוק איך הגעתי למסקנה.",
   },
 ];
 
@@ -76,7 +76,7 @@ export function ArchitectSection() {
 
           {/* Research Manifesto */}
           <div>
-            <p className="text-sm text-primary font-medium mb-4 tracking-wider">מניפסט מחקרי — 4 עקרונות</p>
+            <p className="text-sm text-primary font-medium mb-4 tracking-wider">מניפסט מחקרי: 4 עקרונות</p>
             <div className="grid sm:grid-cols-2 gap-4">
               {manifesto.map((v, i) => (
                 <motion.div
@@ -103,7 +103,7 @@ export function ArchitectSection() {
             className="border-t border-border/50 pt-6"
           >
             <p className="text-sm text-muted-foreground italic">
-              "14 יום משנים את המשוואה. לא סתם ייעוץ — הנדסת חוסן."
+              "14 יום משנים את המשוואה. לא סתם ייעוץ, הנדסת חוסן."
             </p>
           </motion.div>
         </motion.div>
