@@ -49,7 +49,7 @@ export function SuccessStoriesCarousel() {
           className="text-center space-y-3"
         >
           <p className="text-sm text-primary font-medium tracking-wider">מקרים אמיתיים, שמות מוסתרים</p>
-          <h2 className="text-3xl md:text-4xl font-bold font-display">בעיה → בדיקה → תוצאה</h2>
+          <h2 className="text-3xl md:text-4xl font-bold font-display">בעיה ← בדיקה ← תוצאה</h2>
         </motion.div>
 
         <div className="relative">
