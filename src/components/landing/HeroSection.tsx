@@ -1,13 +1,29 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, ChevronDown, Shield, BarChart3 } from "lucide-react";
+import { MessageCircle, ChevronDown, Shield, BarChart3, Award, TrendingUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import erezPhoto from "@/assets/erez-profile.png";
 
 const WHATSAPP_URL = "https://wa.me/972524545963?text=היי%20ארז%2C%20אשמח%20לשיחת%20אבחון%20ראשונית";
 
+const headlines = [
+  { main: "החברה שלך בנויה על גיבורים?", sub: "זו בעיה." },
+  { main: "ניתחתי 100+ ארגונים.", sub: "50% מהם היו על סף קריסה אנטרופית." },
+  { main: "בוא נחשב את ה-J-Quotient שלך", sub: "ב-14 יום." },
+];
+
 export function HeroSection() {
   const navigate = useNavigate();
+  const [headlineIndex, setHeadlineIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setHeadlineIndex((prev) => (prev + 1) % headlines.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   const scrollToROI = () => {
     document.getElementById("roi-engine")?.scrollIntoView({ behavior: "smooth" });
   };
@@ -54,7 +70,7 @@ export function HeroSection() {
           >
             <img
               src={erezPhoto}
-              alt="ארז טל שיר"
+              alt="ארז טל שיר — מומחה לחוסן ארגוני"
               className="h-20 w-20 md:h-28 md:w-28 rounded-full object-cover border-2 border-primary/30 shadow-lg shadow-primary/10"
             />
           </motion.div>
@@ -67,35 +83,28 @@ export function HeroSection() {
             className="inline-flex items-center gap-2 glass rounded-full px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm text-muted-foreground"
           >
             <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-            <span>אבחון מערכתי ראשוני, ללא עלות, ללא התחייבות</span>
+            <span>מומחה לחוסן ארגוני ואנטרופיה מערכתית</span>
           </motion.div>
 
-          {/* Main heading */}
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.15 }}
-            className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold font-display tracking-tight leading-tight"
-          >
-            <span className="text-foreground">הארגון שלך </span>
-            <motion.span
-              className="text-primary inline-block"
-              animate={{
-                textShadow: [
-                  "0 0 8px hsl(var(--primary) / 0)",
-                  "0 0 20px hsl(var(--primary) / 0.4)",
-                  "0 0 8px hsl(var(--primary) / 0)",
-                ],
-              }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            >
-              מדמם
-            </motion.span>
-            <br />
-            <span className="text-muted-foreground text-xl sm:text-2xl md:text-4xl lg:text-5xl">
-              ואף אחד לא יודע מאיפה.
-            </span>
-          </motion.h1>
+          {/* Rotating headline */}
+          <div className="min-h-[120px] md:min-h-[160px] flex items-center justify-center">
+            <AnimatePresence mode="wait">
+              <motion.h1
+                key={headlineIndex}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5 }}
+                className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold font-display tracking-tight leading-tight"
+              >
+                <span className="text-foreground">{headlines[headlineIndex].main}</span>
+                <br />
+                <span className="text-primary text-xl sm:text-2xl md:text-4xl lg:text-5xl">
+                  {headlines[headlineIndex].sub}
+                </span>
+              </motion.h1>
+            </AnimatePresence>
+          </div>
 
           {/* Description */}
           <motion.p
@@ -104,16 +113,31 @@ export function HeroSection() {
             transition={{ duration: 0.6, delay: 0.35 }}
             className="text-base md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed"
           >
-            אני מאתר את הנקודה המדויקת שבה המשאבים דולפים,
-            <br className="hidden md:block" />
-            ועוצר את הדימום תוך 14 יום. בלי קוסמטיקה. בלי באזוורדס.
+            14 יום משנים את המשוואה. לא סתם ייעוץ — הנדסת חוסן.
           </motion.p>
+
+          {/* Trust Badges */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="flex flex-wrap justify-center gap-3"
+          >
+            <div className="inline-flex items-center gap-1.5 glass rounded-full px-4 py-2 text-xs text-muted-foreground">
+              <Award className="h-3.5 w-3.5 text-primary" />
+              ניתחתי 100+ ארגונים
+            </div>
+            <div className="inline-flex items-center gap-1.5 glass rounded-full px-4 py-2 text-xs text-muted-foreground">
+              <TrendingUp className="h-3.5 w-3.5 text-primary" />
+              חסכתי ללקוחות מעל 2M$ בשנה
+            </div>
+          </motion.div>
 
           {/* Primary CTA */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
             className="flex flex-col items-center gap-3 md:gap-4 pt-2 md:pt-4"
           >
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center w-full sm:w-auto">
@@ -157,7 +181,6 @@ export function HeroSection() {
         <ChevronDown className="h-6 w-6" />
       </motion.button>
 
-      {/* Bottom fade */}
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
     </section>
   );

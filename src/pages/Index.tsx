@@ -1,7 +1,7 @@
 import { HeroSection } from "@/components/landing/HeroSection";
 import { PainSection } from "@/components/landing/PainSection";
 import { BridgeSection } from "@/components/landing/BridgeSection";
-import { SocialProofSection } from "@/components/landing/SocialProofSection";
+import { SuccessStoriesCarousel } from "@/components/landing/SuccessStoriesCarousel";
 import { HowItWorksSection } from "@/components/landing/HowItWorksSection";
 import { ArchitectSection } from "@/components/landing/ArchitectSection";
 import { ROIEngine } from "@/components/landing/ROIEngine";
@@ -20,7 +20,7 @@ const Index = () => {
       <HeroSection />
       <PainSection />
       <BridgeSection />
-      <SocialProofSection />
+      <SuccessStoriesCarousel />
       <HowItWorksSection />
       <ArchitectSection />
       <ROIEngine />

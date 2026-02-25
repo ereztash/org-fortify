@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircle } from "lucide-react";
+import { MessageCircle, BarChart3, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const WHATSAPP_URL = "https://wa.me/972524545963?text=היי%20ארז%2C%20אשמח%20לשיחת%20אבחון%20ראשונית";
 
@@ -13,6 +14,7 @@ const navLinks = [
 
 export function StickyNav() {
   const [visible, setVisible] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -39,7 +41,7 @@ export function StickyNav() {
           <div className="container max-w-5xl mx-auto flex items-center justify-between px-4 py-3">
             <span className="text-sm font-semibold font-display text-foreground">ארז טל שיר</span>
 
-            <div className="hidden sm:flex items-center gap-6">
+            <div className="hidden sm:flex items-center gap-4">
               {navLinks.map((link) => (
                 <button
                   key={link.id}
@@ -49,6 +51,14 @@ export function StickyNav() {
                   {link.label}
                 </button>
               ))}
+              <Button variant="outline" size="sm" onClick={() => navigate("/dashboard")} className="gap-1.5 text-xs">
+                <BarChart3 className="h-3.5 w-3.5" />
+                לאבחון מהיר
+              </Button>
+              <Button variant="ghost" size="sm" onClick={() => scrollTo("architect")} className="gap-1.5 text-xs">
+                <BookOpen className="h-3.5 w-3.5" />
+                לעומק המחקר
+              </Button>
             </div>
 
             <Button size="sm" asChild className="gap-2 text-xs">

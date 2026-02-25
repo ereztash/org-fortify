@@ -2,6 +2,25 @@ import { motion } from "framer-motion";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import erezPhoto from "@/assets/erez-profile.png";
 
+const manifesto = [
+  {
+    label: "ספירלת אובדן",
+    desc: "אובדן משאבים כואב פי 2 מרווח — נעצור את ספירלת האובדן לפני שהיא בולעת את הארגון.",
+  },
+  {
+    label: "אותות חלשים",
+    desc: "כל סטייה קטנה היא אות חלש לאנטרופיה — לא נתעלם, נמדוד ונפעל.",
+  },
+  {
+    label: "Bouncing Forward",
+    desc: "חוסן זה לא לחזור למצב הקודם — זה לזנק קדימה. ספירלת רווח במקום ספירלת אובדן.",
+  },
+  {
+    label: "Glass Box",
+    desc: "שקיפות מוחלטת — כל נוסחה, כל הנחה, כל מספר גלויים. אתה רואה בדיוק איך הגעתי למסקנה.",
+  },
+];
+
 export function ArchitectSection() {
   return (
     <section id="architect" className="py-24 px-6">
@@ -39,7 +58,7 @@ export function ArchitectSection() {
                 מי עומד מאחורי זה
               </motion.p>
               <h2 className="text-3xl md:text-4xl font-bold font-display">ארז טל שיר</h2>
-              <p className="text-primary font-medium">ארכיטקט חוסן ארגוני · מייסד COR-SYS</p>
+              <p className="text-primary font-medium">מומחה לחוסן ארגוני ואנטרופיה מערכתית · מייסד COR-SYS</p>
             </div>
           </div>
 
@@ -53,31 +72,26 @@ export function ArchitectSection() {
               באמצעות מתודולוגיית <span className="text-primary font-medium">"העדשה הכפולה"</span>, אני מאתר
               משאבים שדולפים עקב נורמליזציה של סטייה ניהולית, ומטמיע חוסמי עורקים טכנולוגיים לעצירת הדימום.
             </p>
-            <p className="text-sm">
-              למה עובד סוציאלי? כי עבודה סוציאלית מערכתית לא עוסקת בפרט, היא עוסקת בסביבה.
-              אני מביא את אותו החשיבה לארגונים: לא "מה לא בסדר עם האנשים", אלא "מה לא בסדר עם המבנה שבו הם פועלים".
-            </p>
           </div>
 
-          {/* Values */}
-          <div className="grid sm:grid-cols-3 gap-4 pt-2">
-            {[
-              { label: "שקיפות מלאה", desc: "כל נוסחה, כל הנחה, כל מספר, גלויים לך" },
-              { label: "אפס תלות", desc: "אני נכנס, מתקן ויוצא. הצוות שלך ממשיך לבד" },
-              { label: "מדיד ומוכח", desc: "אם לא חסכתי לך כסף, לא עבדתי" },
-            ].map((v, i) => (
-              <motion.div
-                key={v.label}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.3 + i * 0.1 }}
-                className="bg-secondary/50 rounded-xl p-4 space-y-1 border border-border/50"
-              >
-                <p className="text-sm font-semibold text-primary">{v.label}</p>
-                <p className="text-xs text-muted-foreground">{v.desc}</p>
-              </motion.div>
-            ))}
+          {/* Research Manifesto */}
+          <div>
+            <p className="text-sm text-primary font-medium mb-4 tracking-wider">מניפסט מחקרי — 4 עקרונות</p>
+            <div className="grid sm:grid-cols-2 gap-4">
+              {manifesto.map((v, i) => (
+                <motion.div
+                  key={v.label}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.3 + i * 0.1 }}
+                  className="bg-secondary/50 rounded-xl p-4 space-y-1 border border-border/50"
+                >
+                  <p className="text-sm font-semibold text-primary">{v.label}</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{v.desc}</p>
+                </motion.div>
+              ))}
+            </div>
           </div>
 
           {/* Signature */}
@@ -89,7 +103,7 @@ export function ArchitectSection() {
             className="border-t border-border/50 pt-6"
           >
             <p className="text-sm text-muted-foreground italic">
-              "צריך גלגל, אני גלגל. אפס פוזה."
+              "14 יום משנים את המשוואה. לא סתם ייעוץ — הנדסת חוסן."
             </p>
           </motion.div>
         </motion.div>

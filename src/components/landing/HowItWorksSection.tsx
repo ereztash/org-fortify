@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Search, Syringe, ShieldCheck, MessageCircle } from "lucide-react";
+import { Search, Activity, Syringe, ShieldCheck, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const WHATSAPP_URL = "https://wa.me/972524545963?text=היי%20ארז%2C%20אשמח%20לשיחת%20אבחון%20ראשונית";
@@ -8,27 +8,32 @@ const steps = [
   {
     icon: Search,
     day: "ימים 1-3",
-    title: "אבחון מבני",
-    desc: "מיפוי מדויק של נקודות הדליפה: היכן המשאבים נעלמים, אילו תהליכים יוצרים חיכוך, ומה עלות אי-העשייה האמיתית.",
+    title: "אבחון מהיר (ASA Engine)",
+    desc: "ניתוח סוקרטי כפול-עדשה: זיהוי נרמול סטייה, סתירות לוגיות, וכשלים מבניים. מיפוי נקודות הדליפה.",
+  },
+  {
+    icon: Activity,
+    day: "ימים 3-5",
+    title: "ניתוח J-Quotient וסף שבירה",
+    desc: "חישוב יחס החוסן J = C/E. זיהוי אם הארגון חצה את סף השבירה האנטרופי (0.65). כימות עלות אי-העשייה.",
   },
   {
     icon: Syringe,
-    day: "ימים 4-10",
-    title: "הטמעת חוסמי עורקים",
-    desc: "התערבויות מדויקות ומדידות בנקודות הדימום. לא תוכנית אסטרטגית של 80 עמודים, פעולות שעוצרות דליפה עכשיו.",
+    day: "ימים 5-10",
+    title: "התערבות ממוקדת (Tourniquets)",
+    desc: "הטמעת חוסמי עורקים — התערבויות כירורגיות בנקודות הדימום. פעולות מדידות שעוצרות דליפה מיד.",
   },
   {
     icon: ShieldCheck,
     day: "ימים 11-14",
-    title: "ייצוב ומדידה",
-    desc: "אימות שהדימום נעצר. מדידת חיסכון. העברת שליטה מלאה לצוות שלך, בלי תלות בי.",
+    title: "מדידה חוזרת וייצוב",
+    desc: "אימות שהדימום נעצר. מדידת שיפור ב-J-Quotient. העברת שליטה מלאה לצוות, בלי תלות.",
   },
 ];
 
 export function HowItWorksSection() {
   return (
-    <section className="py-24 px-6 relative">
-      {/* Subtle background accent */}
+    <section id="how-it-works" className="py-24 px-6 relative">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/[0.02] to-transparent" />
 
       <div className="container max-w-4xl mx-auto space-y-12 relative z-10">
@@ -42,18 +47,18 @@ export function HowItWorksSection() {
           <p className="text-sm text-primary font-medium tracking-wider">14 יום. לא 14 חודש.</p>
           <h2 className="text-3xl md:text-4xl font-bold font-display">איך זה עובד</h2>
           <p className="text-muted-foreground max-w-lg mx-auto">
-            תהליך כירורגי: כניסה, תיקון, יציאה. בלי תלות, בלי ריטיינר אינסופי.
+            ספרינט אבחוני: כניסה, מדידה, תיקון, אימות. בלי תלות, בלי ריטיינר אינסופי.
           </p>
         </motion.div>
 
-        <div className="space-y-6">
+        <div className="space-y-5">
           {steps.map((step, i) => (
             <motion.div
               key={step.title}
               initial={{ opacity: 0, x: i % 2 === 0 ? 30 : -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.15 }}
+              transition={{ duration: 0.5, delay: i * 0.12 }}
               className="glass rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-start gap-5"
             >
               <div className="flex items-center gap-4 shrink-0">
