@@ -1,138 +1,177 @@
 
 
-# תוכנית שדרוג דף הנחיתה: מרחבים סמנטיים שלא ידעת שחסרים
+# תוכנית שדרוג COR-SYS — מתודולוגיה מחקרית מלאה
 
-## הניתוח: מה חסר ולמה זה קריטי
+## סקירת מצב נוכחי
 
-אחרי ניתוח מעמיק של דף הנחיתה, זיהיתי 8 מרחבים סמנטיים שלא נוצלו, שכל אחד מהם פותר בעיית המרה ספציפית:
+הפרויקט כבר כולל תשתית איתנה: דף נחיתה עם 11 סקשנים, דשבורד עם 8 ווידג'טים, Edge Functions ל-ASA ו-Quote, מערכת Auth מוכנה (אך לא מחוברת), וטבלאות DB (organizations, diagnostics, tourniquets, audit_log). הפרומפט מבקש שדרוג רוחבי של כל הרכיבים — מתוכן מחקרי ועד אבטחה.
 
----
-
-## 1. Social Proof חי (אין כרגע בכלל)
-
-**הבעיה:** אין שום הוכחה חברתית. אתה טוען טענות חזקות ("14 יום", "חוסם עורקים") אבל אין שום קול חיצוני שמאשר.
-
-**הפתרון:** סקשן חדש `SocialProofSection` עם מספרים מדידים בסגנון Counter:
-- "X ארגונים אובחנו"
-- "Y₪ נחסכו"
-- "Z חוסמי עורקים הוטמעו"
-
-מספרים עם אנימציית ספירה (count-up) שנכנסת כש-scroll מגיע. ממוקם בין Pain ל-HowItWorks, כדי שאחרי שהמשתמש מזהה את הכאב, הוא רואה שאחרים כבר פתרו.
+בגלל היקף העבודה, אחלק לשלושה שלבים לפי סדר עדיפות:
 
 ---
 
-## 2. Sticky Navigation Bar
+## שלב 1: תשתית ואבטחה (קריטי)
 
-**הבעיה:** בדף ארוך (7+ סקשנים) אין שום דרך לנווט. המשתמש שגולל למטה מאבד אוריינטציה ואת ה-CTA.
+### 1.1 חיבור Auth ל-App.tsx
+- עטיפת `App` ב-`AuthProvider` (כבר קיים ב-`useAuth.tsx`)
+- הוספת Route ל-`/auth`
+- עטיפת `/dashboard` ב-`ProtectedRoute` (כבר קיים)
+- הדשבורד יהיה מוגן — רק משתמשים מחוברים
 
-**הפתרון:** `StickyNav` שקוף שמופיע אחרי שגוללים מעבר ל-Hero:
-- לוגו/שם קטן בצד ימין
-- קישורי עוגן לסקשנים: תהליך | מחשבון | שאלות
-- כפתור WhatsApp CTA קטן קבוע בצד שמאל
-- Glassmorphism blur עם אנימציית fade-in
+### 1.2 JWT Verification ב-Edge Functions
+- עדכון `supabase/config.toml`: `verify_jwt = true` לשתי הפונקציות
+- הוספת ולידציית JWT בקוד (header `Authorization: Bearer <token>`)
 
----
-
-## 3. Micro-Interactions ו-Scroll Progress
-
-**הבעיה:** הדף מרגיש סטטי. אין תחושת התקדמות או תגובתיות.
-
-**הפתרון:**
-- **Progress bar** דק בראש המסך שממלא ככל שגוללים למטה
-- **Section indicators** (נקודות בצד שמאל) שמראות איפה אתה בדף
-- הסקשנים כבר מונפשים עם framer-motion, נוסיף תזוזה עדינה יותר ב-parallax על אלמנטים ברקע
+### 1.3 עדכון CORContext — נוסחאות מחקריות
+- הוספת `organizationSize` ו-`industry` ל-state
+- נוסחת `deltaPotential` חדשה עם `sizeFactor` ו-`industryFactor`
+- נוסחת `healthScore` מבוססת J-Quotient: `J = C / E`, סף שבירה ב-0.65
+- יצירת `src/lib/industryFactors.ts` עם מפת ענפים (פינטק=1.4, סייבר=1.3, healthtech=1.2)
+- הוספת פונקציות: `calculateLatencyCost`, `calculateSemanticDriftCost`
 
 ---
 
-## 4. מעבר רגשי: מ"כאב" ל"תקווה" (Emotional Bridge)
+## שלב 2: שדרוג דף הנחיתה
 
-**הבעיה:** המעבר מ-PainSection ל-HowItWorks חד מדי. המשתמש נמצא במצב חרדה (זיהה את הכאבים שלו) ופתאום מגיע תהליך טכני.
+### 2.1 HeroSection — Rotating Headlines
+- שלוש כותרות מתחלפות עם אנימציית fade:
+  - "החברה שלך בנויה על גיבורים? זו בעיה."
+  - "ניתחתי 100+ ארגונים. 50% מהם היו על סף קריסה אנטרופית."
+  - "בוא נחשב את ה-J-Quotient שלך ב-14 יום."
+- הוספת Trust Badges: "100+ ארגונים נותחו", "חיסכון מצטבר: 2M$+"
+- StickyNav: הוספת שני כפתורים — "לאבחון מהיר" (דשבורד) + "לעומק המחקר" (אנקר)
 
-**הפתרון:** `BridgeSection` קצר (2-3 שורות) שיוצר גשר רגשי:
-- משפט מעבר כמו: "הבעיה לא בך. הבעיה במבנה. ואת המבנה אפשר לתקן."
-- רקע עם gradient עדין שעובר מגוון ה-destructive (אדום) לגוון ה-primary (ירוק)
-- מסגרת ויזואלית מינימלית, מרכזי, נושם
+### 2.2 PainSection — 3 פתולוגיות מחקריות
+- החלפת 4 הכרטיסים הנוכחיים ל-3 כרטיסי פתולוגיות:
+  - **נרמול סטייה (NOD)**: "70% מהארגונים סובלים משחיקה בגלל תרבות גיבורים" + אינדיקטור כמותי
+  - **שיהוי החלטות**: "עלות ממוצעת 400K$ לשנה" + נוסחה שקופה
+  - **סחיפה סמנטית**: "פער בין מה שאתם אומרים לבין מה שאתם עושים"
+- כל כרטיס עם אייקון, כותרת, תיאור, ומספר כמותי
+
+### 2.3 BridgeSection — עדכון טקסט
+- טקסט חדש: "הבעיה היא לא האנשים, הבעיה היא המבנה. מודל COR-SYS מבוסס על מחקר של 100 ארגונים ו-10,000 סימולציות."
+
+### 2.4 SocialProofSection → SuccessStoriesCarousel (חדש)
+- החלפת הציטוט האישי ב-3 מקרי בוחן אמיתיים בפורמט קרוסלה:
+  - **Trigo** (פינטק): נרמול סטייה → עלות שיהוי 436,800$ → ספרינט 14 יום → חיסכון
+  - **Mesh Payments**: סחיפה סמנטית → 332,800$ → מיקוד מחדש
+  - **Navina** (healthtech): הייפ AI vs צורך טקטי → עיכוב פיתוח
+- כל כרטיס: Problem → COR-SYS Analysis → Financial Result
+
+### 2.5 HowItWorksSection — 4 שלבים
+- עדכון ל-4 שלבים (במקום 3):
+  1. אבחון מהיר (ASA Engine)
+  2. ניתוח J-Quotient וסף שבירה
+  3. התערבות ממוקדת (Tourniquets)
+  4. מדידה חוזרת תוך 14 יום
+
+### 2.6 ArchitectSection — מניפסט מחקרי
+- עדכון 4 עקרונות המניפסט מהמחקר:
+  1. "אובדן משאבים כואב פי 2 מרווח — נעצור את ספירלת האובדן"
+  2. "כל סטייה קטנה היא אות חלש לאנטרופיה"
+  3. "חוסן זה לא לחזור למצב הקודם — זה Bouncing Forward"
+  4. "שקיפות מוחלטת — Glass Box"
+
+### 2.7 EthicsSection — "אני לא עובד עם..."
+- הוספת סקשן: "אני לא עובד עם חברות ש..." (כבר יש anti-patterns, נרחיב)
+
+### 2.8 FAQSection — 7 שאלות
+- הוספת 2 שאלות חדשות: "זה יקר?" (התנגדות), "כבר ניסינו ייעוץ" (התנגדות)
+
+### 2.9 ROIEngine — CTA דינמי משופר
+- עדכון הנוסחה לכלול sizeFactor ו-industryFactor
+- הוספת dropdown לבחירת ענף + שדה גודל ארגון
+
+### 2.10 SEO
+- הוספת meta tags ב-`index.html`: title, description, OG tags
+- הוספת JSON-LD schema לאיש מקצוע
 
 ---
 
-## 5. מחשבון ROI: הנגשה ו-CTA מובנה
+## שלב 3: שדרוג הדשבורד
 
-**הבעיה:** המחשבון מצוין טכנית אבל חסרים בו שני דברים:
-- אין CTA ישיר בסוף (אחרי שהמשתמש רואה מספר גדול, אין שום הנחיה)
-- הסליידרים לא מלווים בהסבר ("שעות אובדן" זה מונח טכני)
+### 3.1 ASAEngine — שאלות מנחות
+- הוספת 3 שאלות מנחות מעל ה-textarea:
+  - "תאר את תהליך קבלת ההחלטות"
+  - "כמה חריגות בטיחות אושרו החודש?"
+  - "איזה מסרים אתם משדרים לשוק?"
+- הניתוח מחזיר ציון לכל פתולוגיה (0-100)
 
-**הפתרון:**
-- הוספת tooltips/הסברים קצרים מתחת לכל סליידר
-- הוספת CTA דינמי בתחתית שמשתנה לפי הסכום: "הארגון שלך מפסיד ₪X בשנה. בוא נדבר."
-- אנימציית "pulse" על המספר הסופי כשהוא גבוה
+### 3.2 HealthGauge — J-Quotient
+- הצגת ערך J בנוסף ל-Health Score
+- קו אדום בסף שבירה (0.65)
 
----
+### 3.3 GlassBoxLog — מקורות נוסחאות
+- הצגת מקור כל חישוב (למשל: "עלות השיהוי = 20 שעות × 175$ × 52 × 0.2")
 
-## 6. Anti-Patterns Section (מה אני לא)
+### 3.4 BenchmarkingEngine (חדש)
+- `src/components/dashboard/BenchmarkingEngine.tsx`
+- השוואה מול נתונים נורמטיביים: "ביחס לארגונים בגודל שלך, אתה ב-X% אחוזון"
+- מבוסס על נתונים סטטיים מהמחקר (100 ארגונים)
 
-**הבעיה:** סקשן האתיקה מסביר מה כן, אבל חסרה ההבחנה "מה אני לא". זה קריטי בשוק הייעוץ הישראלי שמלא בציניות.
+### 3.5 QuoteEngine — טופס עם אימייל + שמירת ליד
+- הוספת שדות: שם חברה, אימייל, טלפון
+- שמירת ליד ב-DB (טבלה חדשה `leads`)
+- שליחת ה-PDF + CTA לוואטסאפ
 
-**הפתרון:** הוספת שורת "Anti-patterns" בתוך ה-EthicsSection:
-- "לא מוכר הדרכות", "לא ריטיינר חודשי", "לא מצגת של 80 עמודים", "לא באזוורדס"
-- סגנון: badges מחוקים (line-through) בצבע muted, יוצרים ניגוד ויזואלי חד עם ההתחייבויות החיוביות
-
----
-
-## 7. Mobile-First Friction Killers
-
-**הבעיה:** כרגע התמונה ב-Hero לא נטענת (ריקה/שבורה בצילום המסך). הכפתורים צפופים במובייל.
-
-**הפתרון:**
-- תיקון טעינת התמונה (fallback + lazy loading + placeholder)
-- WhatsApp FAB: הוספת tooltip "דבר איתי" שמופיע פעם אחת אחרי 5 שניות ונעלם
-- הגדלת אזור הנגיעה (touch target) של הכפתורים ל-48px מינימום
-- הוספת `scroll-margin-top` לכל סקשן כדי שלא יתחבא מתחת ל-sticky nav
+### 3.6 ProfileCard — Trust Badges
+- הוספת badges: "100+ ארגונים", "2M$+ נחסכו"
 
 ---
 
-## 8. Footer מקצועי עם קישורים
-
-**הבעיה:** הפוטר מינימלי מדי. אין קישור ללינקדאין, אימייל, או שום דרך נוספת ליצור קשר מלבד וואטסאפ.
-
-**הפתרון:** הרחבת הפוטר עם:
-- אייקונים: WhatsApp, LinkedIn, Email (עם הקישורים שכבר קיימים במערכת)
-- שורת "מילות מפתח" מינימלית לסמכות (SEO + אמינות): "חוסן ארגוני | אבחון מבני | הנדסת תהליכים"
-
----
-
-## סדר הסקשנים המעודכן
+## סדר סקשנים סופי בדף הנחיתה
 
 ```text
-1. StickyNav (קבוע, מופיע אחרי scroll)
-2. HeroSection (עם תמונה מתוקנת)
-3. PainSection
-4. BridgeSection (גשר רגשי חדש)
-5. SocialProofSection (הוכחה חברתית חדשה)
-6. HowItWorksSection
-7. ArchitectSection
-8. ROIEngine (עם CTA דינמי והסברים)
-9. EthicsSection (עם Anti-Patterns)
-10. FAQSection
-11. LandingFooter (מורחב עם קישורים)
-12. WhatsApp FAB (עם tooltip)
-13. ScrollProgress (רכיב גלובלי)
+ 1. ScrollProgress
+ 2. StickyNav (+ "לאבחון מהיר" + "לעומק המחקר")
+ 3. HeroSection (rotating headlines + trust badges)
+ 4. PainSection (3 פתולוגיות מחקריות)
+ 5. BridgeSection (עם טקסט מחקרי מעודכן)
+ 6. SuccessStoriesCarousel (3 מקרי בוחן: Trigo, Mesh, Navina)
+ 7. HowItWorksSection (4 שלבים)
+ 8. ArchitectSection (מניפסט 4 עקרונות מחקריים)
+ 9. ROIEngine (+ ענף + גודל ארגון + CTA דינמי)
+10. EthicsSection (+ "אני לא עובד עם...")
+11. FAQSection (7 שאלות)
+12. LandingFooter
+13. WhatsAppFAB
 ```
 
 ---
 
-## פירוט טכני
+## קבצים חדשים
+- `src/lib/industryFactors.ts`
+- `src/components/landing/SuccessStoriesCarousel.tsx`
+- `src/components/dashboard/BenchmarkingEngine.tsx`
 
-### קבצים חדשים
-- `src/components/landing/StickyNav.tsx`: ניווט דביק עם Glassmorphism, `useEffect` + `IntersectionObserver` לזיהוי scroll
-- `src/components/landing/SocialProofSection.tsx`: מונים מונפשים עם `useInView` מ-framer-motion
-- `src/components/landing/BridgeSection.tsx`: סקשן מעבר מינימלי עם gradient רקע
-- `src/components/landing/ScrollProgress.tsx`: פס התקדמות דק בראש המסך
+## קבצים לעדכון
+- `src/App.tsx` — AuthProvider + routes
+- `src/contexts/CORContext.tsx` — נוסחאות חדשות + שדות חדשים
+- `src/pages/Index.tsx` — סדר סקשנים
+- `src/pages/Dashboard.tsx` — BenchmarkingEngine
+- `src/components/landing/HeroSection.tsx` — rotating headlines + badges
+- `src/components/landing/PainSection.tsx` — 3 פתולוגיות
+- `src/components/landing/BridgeSection.tsx` — טקסט מעודכן
+- `src/components/landing/SocialProofSection.tsx` → יוחלף ב-SuccessStoriesCarousel
+- `src/components/landing/HowItWorksSection.tsx` — 4 שלבים
+- `src/components/landing/ArchitectSection.tsx` — מניפסט מחקרי
+- `src/components/landing/EthicsSection.tsx` — "לא עובד עם..."
+- `src/components/landing/FAQSection.tsx` — 7 שאלות
+- `src/components/landing/ROIEngine.tsx` — ענף + גודל
+- `src/components/landing/StickyNav.tsx` — כפתורים חדשים
+- `src/components/dashboard/ASAEngine.tsx` — שאלות מנחות
+- `src/components/dashboard/HealthGauge.tsx` — J-Quotient
+- `src/components/dashboard/GlassBoxLog.tsx` — מקורות
+- `src/components/dashboard/QuoteEngine.tsx` — טופס + ליד
+- `src/components/dashboard/ProfileCard.tsx` — badges
+- `supabase/config.toml` — JWT verification
+- `supabase/functions/asa-analyze/index.ts` — JWT check
+- `supabase/functions/generate-quote/index.ts` — JWT check + lead save
+- `index.html` — SEO meta tags
 
-### קבצים שעודכנו
-- `src/pages/Index.tsx`: סדר סקשנים חדש + רכיבים גלובליים
-- `src/components/landing/ROIEngine.tsx`: tooltips, CTA דינמי
-- `src/components/landing/EthicsSection.tsx`: Anti-Patterns badges
-- `src/components/landing/LandingFooter.tsx`: קישורי קשר (LinkedIn, Email, WhatsApp)
-- `src/components/landing/WhatsAppFAB.tsx`: tooltip אוטומטי
-- `src/components/landing/HeroSection.tsx`: fallback לתמונה, scroll-margin
+## הערה חשובה
+בגלל היקף העבודה (~30 קבצים), אתחיל משלב 1 (תשתית + אבטחה + נוסחאות) ואמשיך לשלבים 2-3. זה מבטיח שהבסיס יציב לפני שמשנים UI.
+
+## מיגרציית DB נדרשת
+- טבלה חדשה `leads` (name, email, phone, org_name, delta_potential, created_at) עם RLS
 
