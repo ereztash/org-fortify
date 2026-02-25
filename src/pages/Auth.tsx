@@ -145,7 +145,7 @@ const Auth = () => {
                     className="w-full text-sm"
                     onClick={() => setMode(mode === "signup" ? "login" : "signup")}
                   >
-                    {mode === "signup" ? "יש לי חשבון — כניסה" : "אין לי חשבון — הרשמה"}
+                    {mode === "signup" ? "יש לי חשבון, כניסה" : "אין לי חשבון, הרשמה"}
                   </Button>
                   <Button type="button" variant="ghost" className="w-full text-sm text-muted-foreground" onClick={() => setMode("magic")}>
                     כניסה עם קישור מייל
@@ -157,7 +157,7 @@ const Auth = () => {
         </Card>
 
         <p className="text-center text-xs text-muted-foreground mt-6">
-          COR-SYS v3.4 — אבחון וחוסן ארגוני
+          COR-SYS v3.4: אבחון וחוסן ארגוני
         </p>
       </div>
     </div>

@@ -70,7 +70,7 @@ export function HeroSection() {
           >
             <img
               src={erezPhoto}
-              alt="ארז טל שיר — מומחה לחוסן ארגוני"
+              alt="ארז טל שיר, מומחה לחוסן ארגוני"
               className="h-20 w-20 md:h-28 md:w-28 rounded-full object-cover border-2 border-primary/30 shadow-lg shadow-primary/10"
             />
           </motion.div>
@@ -113,7 +113,7 @@ export function HeroSection() {
             transition={{ duration: 0.6, delay: 0.35 }}
             className="text-base md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed"
           >
-            14 יום משנים את המשוואה. לא סתם ייעוץ — הנדסת חוסן.
+            14 יום משנים את המשוואה. לא סתם ייעוץ, הנדסת חוסן.
           </motion.p>
 
           {/* Trust Badges */}

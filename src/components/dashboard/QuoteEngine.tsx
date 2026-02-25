@@ -66,7 +66,7 @@ export function QuoteEngine() {
       <CardHeader>
         <CardTitle className="text-lg flex items-center gap-2">
           <FileText className="w-5 h-5 text-primary" />
-          Quote Engine — הצעת ספרינט
+          Quote Engine: הצעת ספרינט
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">

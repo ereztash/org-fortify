@@ -70,7 +70,7 @@ export function HealthGauge() {
         </p>
         {isAboveThreshold && (
           <p className="text-[10px] text-destructive font-medium animate-pulse">
-            ⚠ מעל סף שבירה — E &gt; 0.65C
+            ⚠ מעל סף שבירה: E &gt; 0.65C
           </p>
         )}
       </div>

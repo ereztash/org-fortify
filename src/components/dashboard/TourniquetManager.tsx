@@ -27,7 +27,7 @@ export function TourniquetManager() {
       <CardContent>
         {sorted.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-6">
-            אין tourniquets — הפעל ניתוח ASA וצור פעולות מניעתיות
+            אין tourniquets. הפעל ניתוח ASA וצור פעולות מניעתיות
           </p>
         ) : (
           <div className="space-y-3">
