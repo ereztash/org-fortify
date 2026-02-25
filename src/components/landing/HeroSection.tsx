@@ -8,9 +8,11 @@ import erezPhoto from "@/assets/erez-profile.png";
 const WHATSAPP_URL = "https://wa.me/972524545963?text=היי%20ארז%2C%20אשמח%20לשיחת%20אבחון%20ראשונית";
 
 const headlines = [
-  { main: "החברה שלך בנויה על גיבורים?", sub: "זו בעיה." },
-  { main: "ניתחתי 100+ ארגונים.", sub: "50% מהם היו על סף קריסה אנטרופית." },
-  { main: "בוא נחשב את ה-J-Quotient שלך", sub: "ב-14 יום." },
+  { main: "החברה שלך בנויה על גיבורים?", sub: "זו בעיה.", persona: "CEO / מייסד" },
+  { main: "ניתחתי 100+ ארגונים.", sub: "50% מהם היו על סף קריסה אנטרופית.", persona: "COO / VP Ops" },
+  { main: "בוא נחשב את ה-J-Quotient שלך", sub: "ב-14 יום.", persona: "CTO / VP R&D" },
+  { main: "כמה עולה לך חוסר יציבות ארגונית?", sub: "CFO, בוא נדבר מספרים.", persona: "CFO / סמנכ״ל כספים" },
+  { main: "העובדים הטובים עוזבים ראשונים.", sub: "זה לא מקרי.", persona: "VP HR / People" },
 ];
 
 export function HeroSection() {
@@ -85,6 +87,20 @@ export function HeroSection() {
             <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
             <span>מומחה לחוסן ארגוני ואנטרופיה מערכתית</span>
           </motion.div>
+
+          {/* Persona targeting badge */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={headlineIndex}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium bg-primary/10 text-primary border border-primary/20"
+            >
+              רלוונטי עבורך: {headlines[headlineIndex].persona}
+            </motion.div>
+          </AnimatePresence>
 
           {/* Rotating headline */}
           <div className="min-h-[120px] md:min-h-[160px] flex items-center justify-center">

@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useCOR } from "@/contexts/CORContext";
 import { Slider } from "@/components/ui/slider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,13 +7,24 @@ import { Input } from "@/components/ui/input";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import { motion } from "framer-motion";
 import { industryFactors } from "@/lib/industryFactors";
+import { Share2, Mail, MessageCircle, Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const WHATSAPP_ROI_URL = "https://wa.me/972524545963?text=היי%20ארז%2C%20המחשבון%20הראה%20לי%20מספרים%20מעניינים";
 
 export function ROIEngine() {
+  const ENGAGEMENT_COST = 45000; // Average 14-day engagement cost in NIS
+
   const { roiParams, setROIParams, aiRiskFactor, deltaPotential, organizationSize, setOrganizationSize, industry, setIndustry } = useCOR();
+  const [copied, setCopied] = useState(false);
 
   const annualLoss = roiParams.h * roiParams.c * 52;
+
+  const paybackWeeks = useMemo(() => {
+    if (deltaPotential <= 0) return Infinity;
+    const weeklyRecovery = deltaPotential / 52;
+    return Math.ceil(ENGAGEMENT_COST / weeklyRecovery);
+  }, [deltaPotential]);
 
   const chartData = useMemo(() => {
     return [
@@ -22,6 +33,25 @@ export function ROIEngine() {
       { name: "חיסכון פוטנציאלי", value: deltaPotential * 0.7, color: "hsl(160, 84%, 39%)" },
     ];
   }, [annualLoss, deltaPotential]);
+
+  const shareText = `דוח עלות אי-עשייה ארגונית:\n- אובדן שנתי: ₪${annualLoss.toLocaleString("he-IL")}\n- פוטנציאל חיסכון: ₪${deltaPotential.toLocaleString("he-IL", { maximumFractionDigits: 0 })}\n- החזר השקעה תוך ${paybackWeeks} שבועות\n\nלפרטים: ${window.location.origin}`;
+
+  const handleShareEmail = () => {
+    const subject = encodeURIComponent("דוח עלות אי-עשייה ארגונית");
+    const body = encodeURIComponent(shareText);
+    window.open(`mailto:?subject=${subject}&body=${body}`, "_blank");
+  };
+
+  const handleShareWhatsApp = () => {
+    const text = encodeURIComponent(shareText);
+    window.open(`https://wa.me/?text=${text}`, "_blank");
+  };
+
+  const handleCopyLink = async () => {
+    await navigator.clipboard.writeText(shareText);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
     <section id="roi-engine" className="py-24 px-6 scroll-mt-20">
@@ -136,6 +166,25 @@ export function ROIEngine() {
                 </motion.p>
               </CardContent>
             </Card>
+
+            {/* Payback Period */}
+            <Card className="glass border-accent/20">
+              <CardContent className="p-4 flex items-center justify-between">
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">זמן החזר השקעה משוער</p>
+                  <p className="text-xs text-muted-foreground">על בסיס עלות ספרינט של 14 יום</p>
+                </div>
+                <motion.div
+                  key={paybackWeeks}
+                  initial={{ scale: 1.2 }}
+                  animate={{ scale: 1 }}
+                  className="text-center"
+                >
+                  <span className="text-3xl font-bold font-display text-primary">{paybackWeeks === Infinity ? "∞" : paybackWeeks}</span>
+                  <p className="text-xs text-muted-foreground">שבועות</p>
+                </motion.div>
+              </CardContent>
+            </Card>
           </motion.div>
 
           {/* Chart */}
@@ -182,14 +231,35 @@ export function ROIEngine() {
               <span className="text-primary animate-pulse">₪{deltaPotential.toLocaleString("he-IL", { maximumFractionDigits: 0 })}</span>{" "}
               בשנה. בוא נדבר.
             </motion.p>
-            <a
-              href={WHATSAPP_ROI_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-primary text-primary-foreground font-medium hover:opacity-90 transition-opacity"
-            >
-              שיחת אבחון חינם
-            </a>
+            <div className="flex flex-wrap justify-center gap-3">
+              <a
+                href={WHATSAPP_ROI_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-primary text-primary-foreground font-medium hover:opacity-90 transition-opacity"
+              >
+                שיחת אבחון חינם
+              </a>
+            </div>
+
+            {/* Share with management CTA */}
+            <div className="pt-2 space-y-2">
+              <p className="text-sm text-muted-foreground">רוצה לשתף את הממצאים עם ההנהלה?</p>
+              <div className="flex flex-wrap justify-center gap-2">
+                <Button variant="outline" size="sm" onClick={handleShareEmail} className="gap-2">
+                  <Mail className="h-4 w-4" />
+                  שלח במייל
+                </Button>
+                <Button variant="outline" size="sm" onClick={handleShareWhatsApp} className="gap-2">
+                  <MessageCircle className="h-4 w-4" />
+                  שלח בוואטסאפ
+                </Button>
+                <Button variant="outline" size="sm" onClick={handleCopyLink} className="gap-2">
+                  {copied ? <Check className="h-4 w-4" /> : <Share2 className="h-4 w-4" />}
+                  {copied ? "הועתק" : "העתק טקסט"}
+                </Button>
+              </div>
+            </div>
           </motion.div>
         )}
       </div>
