@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -12,6 +12,7 @@ import {
   Brain,
   Share2,
   Check,
+  Loader2,
 } from "lucide-react";
 import {
   DIAGNOSTIC_QUESTIONS,
@@ -22,9 +23,12 @@ import {
 } from "@/lib/diagnosticQuestions";
 import {
   computeDiagnosticResult,
+  computeResourceScore,
   isDiagnosticComplete,
   getDiagnosticProgress,
-  buildWhatsAppMessage,
+  getDynamicCTA,
+  buildMirrorSentence,
+  buildShareCliffhanger,
   DiagnosticResult,
   ResourceScore,
 } from "@/lib/diagnosticScoring";
@@ -34,6 +38,13 @@ const RESOURCE_ICONS: Record<ResourceType, typeof Clock> = {
   time: Clock,
   money: DollarSign,
   attention: Brain,
+};
+
+// Question indices where each resource block ends (0-indexed)
+const RESOURCE_BLOCK_ENDS: Record<number, ResourceType> = {
+  2: "time",      // after q3
+  5: "money",     // after q6
+  8: "attention", // after q9 → goes to computing phase instead
 };
 
 // ── SVG Circular Progress Meter ─────────────────────────────────────────────
@@ -46,32 +57,23 @@ function ResourceMeter({
   delayMs: number;
   animate: boolean;
 }) {
-  const circumference = 2 * Math.PI * 50; // r=50 → ≈314.16
+  const circumference = 2 * Math.PI * 50;
   const dashOffset = circumference - (score.leakScore / 100) * circumference;
   const Icon = RESOURCE_ICONS[score.resource];
 
   return (
-    <div className="flex flex-col items-center gap-3">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: delayMs / 1000 }}
+      className="flex flex-col items-center gap-3"
+    >
       <div className="relative w-28 h-28 md:w-32 md:h-32">
         <svg viewBox="0 0 120 120" className="w-full h-full -rotate-90">
-          {/* Track */}
+          <circle cx="60" cy="60" r="50" fill="none" stroke="hsl(215 25% 15%)" strokeWidth="10" />
           <circle
-            cx="60"
-            cy="60"
-            r="50"
-            fill="none"
-            stroke="hsl(215 25% 15%)"
-            strokeWidth="10"
-          />
-          {/* Fill */}
-          <circle
-            cx="60"
-            cy="60"
-            r="50"
-            fill="none"
-            stroke={score.color}
-            strokeWidth="10"
-            strokeLinecap="round"
+            cx="60" cy="60" r="50" fill="none"
+            stroke={score.color} strokeWidth="10" strokeLinecap="round"
             strokeDasharray={circumference}
             strokeDashoffset={animate ? dashOffset : circumference}
             style={{
@@ -80,7 +82,6 @@ function ResourceMeter({
             }}
           />
         </svg>
-        {/* Center content */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span className="text-2xl font-bold font-display" style={{ color: score.color }}>
             {score.leakScore}%
@@ -88,27 +89,188 @@ function ResourceMeter({
           <span className="text-[10px] text-muted-foreground">דליפה</span>
         </div>
       </div>
-
-      {/* Label */}
       <div className="text-center space-y-1">
         <div className="flex items-center justify-center gap-1.5">
           <Icon className="h-3.5 w-3.5" style={{ color: score.color }} />
-          <span className="text-sm font-semibold text-foreground">
-            {RESOURCE_LABELS[score.resource]}
-          </span>
+          <span className="text-sm font-semibold text-foreground">{RESOURCE_LABELS[score.resource]}</span>
         </div>
         <span
           className="text-xs px-2 py-0.5 rounded-full font-medium"
-          style={{
-            color: score.color,
-            background: `${score.color}18`,
-            border: `1px solid ${score.color}30`,
-          }}
+          style={{ color: score.color, background: `${score.color}18`, border: `1px solid ${score.color}30` }}
         >
           {score.label}
         </span>
       </div>
-    </div>
+    </motion.div>
+  );
+}
+
+// ── Micro-Revelation Interstitial ────────────────────────────────────────────
+// Shows a brief flash of the resource score after completing each 3-question block.
+// Creates curiosity: "wait, my time leak is THAT high? What about attention?"
+function MicroRevelation({
+  resource,
+  score,
+  onContinue,
+}: {
+  resource: ResourceType;
+  score: ResourceScore;
+  onContinue: () => void;
+}) {
+  const Icon = RESOURCE_ICONS[resource];
+  const color = RESOURCE_COLORS[resource];
+  const nextResource: Record<ResourceType, string> = {
+    time: "עכשיו — כסף",
+    money: "עכשיו — קשב",
+    attention: "",
+  };
+
+  useEffect(() => {
+    const t = setTimeout(onContinue, 3200);
+    return () => clearTimeout(t);
+  }, [onContinue]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{ duration: 0.4 }}
+      className="flex flex-col items-center gap-5 py-6"
+    >
+      {/* Mini meter */}
+      <div className="relative w-24 h-24">
+        <svg viewBox="0 0 120 120" className="w-full h-full -rotate-90">
+          <circle cx="60" cy="60" r="50" fill="none" stroke="hsl(215 25% 15%)" strokeWidth="10" />
+          <motion.circle
+            cx="60" cy="60" r="50" fill="none"
+            stroke={score.color} strokeWidth="10" strokeLinecap="round"
+            strokeDasharray={2 * Math.PI * 50}
+            initial={{ strokeDashoffset: 2 * Math.PI * 50 }}
+            animate={{ strokeDashoffset: (2 * Math.PI * 50) - (score.leakScore / 100) * (2 * Math.PI * 50) }}
+            transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
+            style={{ filter: `drop-shadow(0 0 8px ${score.color}80)` }}
+          />
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <motion.span
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8 }}
+            className="text-xl font-bold font-display"
+            style={{ color: score.color }}
+          >
+            {score.leakScore}%
+          </motion.span>
+        </div>
+      </div>
+
+      <div className="text-center space-y-2">
+        <div className="flex items-center justify-center gap-2">
+          <Icon className="h-4 w-4" style={{ color }} />
+          <span className="text-sm font-semibold" style={{ color }}>
+            דליפת {RESOURCE_LABELS[resource]}
+          </span>
+        </div>
+        <motion.p
+          initial={{ opacity: 0, y: 5 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.2 }}
+          className="text-xs text-muted-foreground"
+        >
+          {score.leakScore >= 50 ? "זה גבוה." : score.leakScore >= 25 ? "יש מקום לשיפור." : "נראה טוב."}
+          {nextResource[resource] && <span className="text-foreground font-medium"> {nextResource[resource]}.</span>}
+        </motion.p>
+      </div>
+
+      {/* Progress dots */}
+      <div className="flex gap-2">
+        {(["time", "money", "attention"] as ResourceType[]).map((r) => (
+          <div
+            key={r}
+            className="w-2 h-2 rounded-full transition-all duration-300"
+            style={{
+              background: r === resource ? RESOURCE_COLORS[r] : "hsl(215 25% 15%)",
+              boxShadow: r === resource ? `0 0 8px ${RESOURCE_COLORS[r]}60` : "none",
+            }}
+          />
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
+// ── Computing Animation (Pre-Revelation Tension) ─────────────────────────────
+// The narrative "pause before the twist" — builds anticipation.
+function ComputingPhase({ onDone }: { onDone: () => void }) {
+  const [step, setStep] = useState(0);
+  const steps = [
+    "מנתח דפוסי זמן...",
+    "חושב תדירות דליפות כספיות...",
+    "ממפה עומס קשב...",
+    "מחשב System Health Index...",
+  ];
+
+  useEffect(() => {
+    const intervals = [800, 1600, 2400, 3400];
+    const timers = intervals.map((ms, i) =>
+      setTimeout(() => {
+        if (i < steps.length) setStep(i + 1);
+      }, ms)
+    );
+    const done = setTimeout(onDone, 4000);
+    return () => { timers.forEach(clearTimeout); clearTimeout(done); };
+  }, [onDone]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="flex flex-col items-center gap-8 py-12"
+    >
+      {/* Orbiting icons */}
+      <div className="relative w-32 h-32">
+        {(["time", "money", "attention"] as ResourceType[]).map((r, i) => {
+          const Icon = RESOURCE_ICONS[r];
+          const color = RESOURCE_COLORS[r];
+          const angle = (i * 120) - 90;
+          return (
+            <motion.div
+              key={r}
+              className="absolute w-10 h-10 rounded-full flex items-center justify-center"
+              style={{ background: `${color}20`, border: `1px solid ${color}40`, top: "50%", left: "50%", marginTop: -20, marginLeft: -20 }}
+              animate={{
+                x: [Math.cos((angle * Math.PI) / 180) * 44, Math.cos(((angle + 360) * Math.PI) / 180) * 44],
+                y: [Math.sin((angle * Math.PI) / 180) * 44, Math.sin(((angle + 360) * Math.PI) / 180) * 44],
+              }}
+              transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+            >
+              <Icon className="h-4 w-4" style={{ color }} />
+            </motion.div>
+          );
+        })}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <Loader2 className="h-6 w-6 animate-spin text-primary/60" />
+        </div>
+      </div>
+
+      {/* Step labels */}
+      <div className="space-y-2 text-center min-h-[60px]">
+        <AnimatePresence mode="wait">
+          {steps.slice(0, step).map((s, i) => (
+            <motion.p
+              key={i}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: i === step - 1 ? 1 : 0.4, y: 0 }}
+              className="text-xs text-muted-foreground"
+            >
+              {s}
+            </motion.p>
+          ))}
+        </AnimatePresence>
+      </div>
+    </motion.div>
   );
 }
 
@@ -141,20 +303,14 @@ function QuestionCard({
       transition={{ duration: 0.3 }}
       className="space-y-6"
     >
-      {/* Resource badge */}
       <div
         className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold"
-        style={{
-          color: resourceColor,
-          background: `${resourceColor}15`,
-          border: `1px solid ${resourceColor}30`,
-        }}
+        style={{ color: resourceColor, background: `${resourceColor}15`, border: `1px solid ${resourceColor}30` }}
       >
         <Icon className="h-3.5 w-3.5" />
         {RESOURCE_LABELS[question.resource]}
       </div>
 
-      {/* Question text */}
       <div className="space-y-2">
         <h3 className="text-xl md:text-2xl font-bold font-display text-foreground leading-snug">
           {question.text}
@@ -164,7 +320,6 @@ function QuestionCard({
         )}
       </div>
 
-      {/* MCQ */}
       {question.format === "mcq" && question.options && (
         <div className="space-y-2.5">
           {question.options.map((opt) => {
@@ -174,10 +329,9 @@ function QuestionCard({
                 key={opt.value}
                 onClick={() => handleMCQSelect(opt.value)}
                 className={`w-full text-right px-4 py-3.5 rounded-xl border text-sm font-medium transition-all duration-200
-                  ${
-                    isSelected
-                      ? "border-primary/60 bg-primary/10 text-foreground scale-[1.01]"
-                      : "border-border/30 bg-card/30 text-muted-foreground hover:border-border/60 hover:bg-card/50 hover:text-foreground"
+                  ${isSelected
+                    ? "border-primary/60 bg-primary/10 text-foreground scale-[1.01]"
+                    : "border-border/30 bg-card/30 text-muted-foreground hover:border-border/60 hover:bg-card/50 hover:text-foreground"
                   }`}
               >
                 {opt.label}
@@ -187,7 +341,6 @@ function QuestionCard({
         </div>
       )}
 
-      {/* Slider */}
       {question.format === "slider" && question.sliderLabels && (
         <div className="space-y-6">
           <div className="space-y-4">
@@ -195,9 +348,7 @@ function QuestionCard({
               dir="rtl"
               value={[currentValue ?? 3]}
               onValueChange={([v]) => onSelect(v)}
-              min={1}
-              max={5}
-              step={1}
+              min={1} max={5} step={1}
               className="py-2"
             />
             <div className="flex justify-between text-xs text-muted-foreground">
@@ -206,17 +357,15 @@ function QuestionCard({
             </div>
           </div>
 
-          {/* Value indicator */}
           <div className="flex justify-center gap-2">
             {[1, 2, 3, 4, 5].map((v) => (
               <button
                 key={v}
                 onClick={() => onSelect(v)}
                 className={`w-8 h-8 rounded-full text-xs font-bold border transition-all duration-200
-                  ${
-                    currentValue === v
-                      ? "border-primary bg-primary/20 text-primary scale-110"
-                      : "border-border/30 text-muted-foreground hover:border-border/60"
+                  ${currentValue === v
+                    ? "border-primary bg-primary/20 text-primary scale-110"
+                    : "border-border/30 text-muted-foreground hover:border-border/60"
                   }`}
               >
                 {v}
@@ -224,11 +373,7 @@ function QuestionCard({
             ))}
           </div>
 
-          <Button
-            onClick={onNext}
-            disabled={currentValue === undefined}
-            className="w-full gap-2"
-          >
+          <Button onClick={onNext} disabled={currentValue === undefined} className="w-full gap-2">
             המשך
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -239,10 +384,12 @@ function QuestionCard({
 }
 
 // ── Revelation Phase ─────────────────────────────────────────────────────────
-function RevelationPhase({ result }: { result: DiagnosticResult }) {
+function RevelationPhase({ result, answers }: { result: DiagnosticResult; answers: DiagnosticAnswers }) {
   const [metersAnimated, setMetersAnimated] = useState(false);
   const [copied, setCopied] = useState(false);
-  const waUrl = buildWhatsAppMessage(result);
+
+  const cta = getDynamicCTA(result);
+  const mirrorSentence = buildMirrorSentence(answers, result.dominantLeak);
 
   useEffect(() => {
     const t = setTimeout(() => setMetersAnimated(true), 100);
@@ -252,11 +399,11 @@ function RevelationPhase({ result }: { result: DiagnosticResult }) {
   const dominantLabel = RESOURCE_LABELS[result.dominantLeak];
   const dominantScore = result[result.dominantLeak];
 
-  const handleCopyResult = async () => {
-    const text = `ציון יציבות מערכת: ${result.healthIndex}/100 (${result.healthLabel})\nדליפה ב${dominantLabel}: ${dominantScore.leakScore}%\nגרירה שבועית: ~${result.weeklyDragHours} שעות`;
+  const handleShare = async () => {
+    const text = buildShareCliffhanger(result);
     await navigator.clipboard.writeText(text);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setTimeout(() => setCopied(false), 2500);
   };
 
   return (
@@ -282,13 +429,13 @@ function RevelationPhase({ result }: { result: DiagnosticResult }) {
         </h3>
       </div>
 
-      {/* Three meters */}
+      {/* Three meters — ordered best→worst (peak-end rule) */}
       <div className="flex justify-center gap-8 md:gap-14">
-        {(["time", "money", "attention"] as ResourceType[]).map((r, i) => (
+        {result.revealOrder.map((r, i) => (
           <ResourceMeter
             key={r}
             score={result[r]}
-            delayMs={i * 300}
+            delayMs={i * 500}
             animate={metersAnimated}
           />
         ))}
@@ -298,7 +445,7 @@ function RevelationPhase({ result }: { result: DiagnosticResult }) {
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.6 }}
+        transition={{ delay: 1.6 }}
         className="glass rounded-2xl p-6 text-center space-y-3 border border-border/20"
       >
         <p className="text-xs text-muted-foreground font-medium tracking-wider uppercase">
@@ -307,7 +454,7 @@ function RevelationPhase({ result }: { result: DiagnosticResult }) {
         <motion.div
           initial={{ scale: 0.5 }}
           animate={{ scale: 1 }}
-          transition={{ type: "spring", stiffness: 150, delay: 0.8 }}
+          transition={{ type: "spring", stiffness: 150, delay: 1.8 }}
           className="text-6xl md:text-7xl font-bold font-display"
           style={{ color: result.healthColor }}
         >
@@ -315,30 +462,34 @@ function RevelationPhase({ result }: { result: DiagnosticResult }) {
         </motion.div>
         <div
           className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-semibold"
-          style={{
-            color: result.healthColor,
-            background: `${result.healthColor}15`,
-            border: `1px solid ${result.healthColor}30`,
-          }}
+          style={{ color: result.healthColor, background: `${result.healthColor}15`, border: `1px solid ${result.healthColor}30` }}
         >
           {result.healthLabel}
         </div>
       </motion.div>
 
-      {/* Dominant insight */}
+      {/* Mirror sentence — anagnorisis */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1 }}
+        transition={{ delay: 2.2 }}
         className="space-y-3"
       >
-        <div className="glass rounded-xl p-4 border border-border/20 space-y-2">
+        <div className="glass rounded-xl p-5 border border-border/20 space-y-3">
           <p className="text-sm font-semibold text-foreground">
             הדליפה הגדולה ביותר שלך:{" "}
             <span style={{ color: RESOURCE_COLORS[result.dominantLeak] }}>
               {dominantLabel} — {dominantScore.leakScore}%
             </span>
           </p>
+
+          {/* Mirror: reflect the user's own answers back */}
+          {mirrorSentence && (
+            <p className="text-sm text-foreground/80 leading-relaxed border-r-2 pr-3" style={{ borderColor: RESOURCE_COLORS[result.dominantLeak] }}>
+              {mirrorSentence}
+            </p>
+          )}
+
           <p className="text-sm text-muted-foreground">
             תרגום לזמן: ~
             <span className="text-foreground font-bold">{result.weeklyDragHours} שעות בשבוע</span>{" "}
@@ -347,33 +498,36 @@ function RevelationPhase({ result }: { result: DiagnosticResult }) {
         </div>
 
         <p className="text-center text-xs text-muted-foreground">
-          המספרים האלה לא מדידים — עד עכשיו.
+          המספרים האלה לא היו מדידים — עד עכשיו.
         </p>
       </motion.div>
 
-      {/* CTAs */}
+      {/* Dynamic CTA — mentor archetype */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.2 }}
-        className="space-y-3"
+        transition={{ delay: 2.6 }}
+        className="space-y-4"
       >
+        {/* Mentor message */}
+        <p className="text-center text-sm text-foreground font-medium leading-relaxed">
+          {cta.text}
+        </p>
+
         <a
-          href={waUrl}
+          href={cta.whatsappUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center justify-center gap-3 w-full px-6 py-4 rounded-xl bg-primary text-primary-foreground font-bold text-base hover:opacity-90 transition-opacity shadow-lg shadow-primary/25 glow-primary"
         >
           <MessageCircle className="h-5 w-5" />
-          קבל פרשנות לתוצאות שלך, חינם
+          שיחת 15 דקות, חינם
         </a>
-        <Button
-          variant="outline"
-          className="w-full gap-2 border-border/40"
-          onClick={handleCopyResult}
-        >
+
+        {/* Share as cliffhanger */}
+        <Button variant="outline" className="w-full gap-2 border-border/40" onClick={handleShare}>
           {copied ? <Check className="h-4 w-4" /> : <Share2 className="h-4 w-4" />}
-          {copied ? "הועתק!" : "שתף את התוצאות"}
+          {copied ? "הועתק!" : "הדליפה שלי היא ב... — שתף אתגר"}
         </Button>
       </motion.div>
     </motion.div>
@@ -381,25 +535,21 @@ function RevelationPhase({ result }: { result: DiagnosticResult }) {
 }
 
 // ── Main Component ───────────────────────────────────────────────────────────
-type Phase = "intro" | "questions" | "result";
+type Phase = "intro" | "questions" | "micro-reveal" | "computing" | "result";
 
 export function DiagnosticSection() {
   const [phase, setPhase] = useState<Phase>("intro");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<DiagnosticAnswers>({});
+  const [microRevealResource, setMicroRevealResource] = useState<ResourceType | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
 
-  // Restore partial progress from localStorage
+  // Restore partial progress
   useEffect(() => {
     try {
       const saved = localStorage.getItem("cor-sys-diagnostic");
-      if (saved) {
-        const parsed = JSON.parse(saved) as DiagnosticAnswers;
-        setAnswers(parsed);
-      }
-    } catch {
-      // ignore
-    }
+      if (saved) setAnswers(JSON.parse(saved));
+    } catch { /* ignore */ }
   }, []);
 
   const result = useMemo<DiagnosticResult | null>(() => {
@@ -413,23 +563,41 @@ export function DiagnosticSection() {
   const handleAnswer = (value: number) => {
     const updated = { ...answers, [currentQuestion.id]: value };
     setAnswers(updated);
-    try {
-      localStorage.setItem("cor-sys-diagnostic", JSON.stringify(updated));
-    } catch {
-      // ignore
-    }
+    try { localStorage.setItem("cor-sys-diagnostic", JSON.stringify(updated)); } catch { /* ignore */ }
   };
 
-  const handleNext = () => {
-    if (currentIndex < DIAGNOSTIC_QUESTIONS.length - 1) {
-      setCurrentIndex((i) => i + 1);
-    } else {
-      setPhase("result");
-      setTimeout(() => {
-        sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 100);
+  const handleNext = useCallback(() => {
+    const nextIndex = currentIndex + 1;
+
+    // Check if we just finished a resource block (after q3 or q6)
+    const blockResource = RESOURCE_BLOCK_ENDS[currentIndex];
+    if (blockResource && blockResource !== "attention" && nextIndex < DIAGNOSTIC_QUESTIONS.length) {
+      // Show micro-revelation for completed resource
+      setMicroRevealResource(blockResource);
+      setPhase("micro-reveal");
+      return;
     }
-  };
+
+    if (nextIndex < DIAGNOSTIC_QUESTIONS.length) {
+      setCurrentIndex(nextIndex);
+    } else {
+      // All 9 done → computing animation → result
+      setPhase("computing");
+    }
+  }, [currentIndex]);
+
+  const handleMicroRevealDone = useCallback(() => {
+    setMicroRevealResource(null);
+    setPhase("questions");
+    setCurrentIndex((i) => i + 1);
+  }, []);
+
+  const handleComputingDone = useCallback(() => {
+    setPhase("result");
+    setTimeout(() => {
+      sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
+  }, []);
 
   const handlePrev = () => {
     if (currentIndex > 0) setCurrentIndex((i) => i - 1);
@@ -445,8 +613,15 @@ export function DiagnosticSection() {
     setPhase("intro");
     setCurrentIndex(0);
     setAnswers({});
+    setMicroRevealResource(null);
     localStorage.removeItem("cor-sys-diagnostic");
   };
+
+  // Compute partial score for micro-revelation
+  const microRevealScore = useMemo(() => {
+    if (!microRevealResource) return null;
+    return computeResourceScore(microRevealResource, answers);
+  }, [microRevealResource, answers]);
 
   return (
     <section
@@ -491,8 +666,8 @@ export function DiagnosticSection() {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="glass rounded-2xl border border-border/20 overflow-hidden"
         >
-          {/* Progress bar — visible during questions */}
-          {phase === "questions" && (
+          {/* Progress bar */}
+          {(phase === "questions" || phase === "micro-reveal") && (
             <div className="h-1 bg-muted/30">
               <motion.div
                 className="h-full bg-gradient-to-r from-primary/80 via-primary to-[hsl(38_92%_50%)]"
@@ -514,7 +689,6 @@ export function DiagnosticSection() {
                   transition={{ duration: 0.3 }}
                   className="space-y-8"
                 >
-                  {/* Three resource icons */}
                   <div className="flex justify-center gap-6">
                     {(["time", "money", "attention"] as ResourceType[]).map((r) => {
                       const Icon = RESOURCE_ICONS[r];
@@ -527,9 +701,7 @@ export function DiagnosticSection() {
                           >
                             <Icon className="h-5 w-5" style={{ color }} />
                           </div>
-                          <span className="text-xs text-muted-foreground font-medium">
-                            {RESOURCE_LABELS[r]}
-                          </span>
+                          <span className="text-xs text-muted-foreground font-medium">{RESOURCE_LABELS[r]}</span>
                         </div>
                       );
                     })}
@@ -540,8 +712,7 @@ export function DiagnosticSection() {
                       כל מערכת — ארגון, צוות, עסק עצמאי — פועלת על שלושה משאבים בלבד.
                     </p>
                     <p className="text-muted-foreground text-sm leading-relaxed">
-                      הבעיה: רוב הדליפות הן בלתי נראות. לא כי הן לא קיימות — אלא כי אף אחד לא
-                      מדד אותן.
+                      הבעיה: רוב הדליפות הן בלתי נראות. לא כי הן לא קיימות — אלא כי אף אחד לא מדד אותן.
                     </p>
                     <p className="text-muted-foreground text-sm leading-relaxed">
                       האבחון הזה עושה בדיוק את זה.
@@ -573,15 +744,9 @@ export function DiagnosticSection() {
                   transition={{ duration: 0.2 }}
                   className="space-y-6"
                 >
-                  {/* Step counter */}
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>
-                      שאלה {currentIndex + 1} מתוך {DIAGNOSTIC_QUESTIONS.length}
-                    </span>
-                    <span
-                      className="font-medium"
-                      style={{ color: RESOURCE_COLORS[currentQuestion.resource] }}
-                    >
+                    <span>שאלה {currentIndex + 1} מתוך {DIAGNOSTIC_QUESTIONS.length}</span>
+                    <span className="font-medium" style={{ color: RESOURCE_COLORS[currentQuestion.resource] }}>
                       {RESOURCE_LABELS[currentQuestion.resource]}
                     </span>
                   </div>
@@ -596,22 +761,14 @@ export function DiagnosticSection() {
                     />
                   </AnimatePresence>
 
-                  {/* Navigation */}
                   <div className="flex justify-between items-center pt-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handlePrev}
-                      className="gap-1.5 text-muted-foreground hover:text-foreground"
-                    >
+                    <Button variant="ghost" size="sm" onClick={handlePrev} className="gap-1.5 text-muted-foreground hover:text-foreground">
                       <ChevronRight className="h-4 w-4" />
                       חזור
                     </Button>
-
                     {currentQuestion.format === "mcq" && (
                       <Button
-                        variant="ghost"
-                        size="sm"
+                        variant="ghost" size="sm"
                         disabled={answers[currentQuestion.id] === undefined}
                         onClick={handleNext}
                         className="gap-1.5 text-muted-foreground hover:text-foreground"
@@ -624,6 +781,21 @@ export function DiagnosticSection() {
                 </motion.div>
               )}
 
+              {/* ── MICRO-REVELATION ── */}
+              {phase === "micro-reveal" && microRevealResource && microRevealScore && (
+                <MicroRevelation
+                  key={`micro-${microRevealResource}`}
+                  resource={microRevealResource}
+                  score={microRevealScore}
+                  onContinue={handleMicroRevealDone}
+                />
+              )}
+
+              {/* ── COMPUTING (tension builder) ── */}
+              {phase === "computing" && (
+                <ComputingPhase key="computing" onDone={handleComputingDone} />
+              )}
+
               {/* ── RESULT ── */}
               {phase === "result" && result && (
                 <motion.div
@@ -633,7 +805,7 @@ export function DiagnosticSection() {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <RevelationPhase result={result} />
+                  <RevelationPhase result={result} answers={answers} />
                   <button
                     onClick={handleReset}
                     className="mt-6 w-full text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors"
