@@ -184,9 +184,40 @@ export function getDynamicCTA(result: DiagnosticResult): { text: string; whatsap
 }
 
 // ── Share Cliffhanger ────────────────────────────────────────────────────────
-export function buildShareCliffhanger(result: DiagnosticResult): string {
+export function buildShareCliffhanger(result: DiagnosticResult, shareUrl: string): string {
   const resourceLabels: Record<ResourceType, string> = { time: 'זמן', money: 'כסף', attention: 'קשב' };
   const dominant = resourceLabels[result.dominantLeak];
   const score = result[result.dominantLeak].leakScore;
-  return `הדליפה הגדולה שלי היא ב${dominant} — ${score}%. מה שלך?\nhttps://org-fortify.lovable.app`;
+  return `הדליפה הגדולה שלי היא ב${dominant} — ${score}%. מה שלך?\n${shareUrl}`;
+}
+
+// ── URL Encoding/Decoding ─────────────────────────────────────────────────────
+// Encodes 9 answers (each 1-5) as a compact base64 string in the URL hash.
+// Format: q1q2q3q4q5q6q7q8q9 → e.g. "135243421" → btoa → URL hash #d=...
+export function encodeDiagnosticToHash(answers: DiagnosticAnswers): string {
+  const digits = ['q1','q2','q3','q4','q5','q6','q7','q8','q9']
+    .map(id => String(answers[id] ?? '0'))
+    .join('');
+  return btoa(digits);
+}
+
+export function decodeDiagnosticFromHash(hash: string): DiagnosticAnswers | null {
+  try {
+    const param = new URLSearchParams(hash.replace(/^#/, '')).get('d');
+    if (!param) return null;
+    const digits = atob(param);
+    if (!/^[1-5]{9}$/.test(digits)) return null;
+    const ids = ['q1','q2','q3','q4','q5','q6','q7','q8','q9'];
+    return Object.fromEntries(ids.map((id, i) => [id, parseInt(digits[i])]));
+  } catch {
+    return null;
+  }
+}
+
+export function buildShareUrl(answers: DiagnosticAnswers): string {
+  const encoded = encodeDiagnosticToHash(answers);
+  const base = typeof window !== 'undefined'
+    ? `${window.location.origin}${window.location.pathname}`
+    : 'https://org-fortify.lovable.app';
+  return `${base}#d=${encoded}`;
 }

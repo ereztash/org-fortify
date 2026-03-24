@@ -29,6 +29,8 @@ import {
   getDynamicCTA,
   buildMirrorSentence,
   buildShareCliffhanger,
+  buildShareUrl,
+  decodeDiagnosticFromHash,
   DiagnosticResult,
   ResourceScore,
 } from "@/lib/diagnosticScoring";
@@ -384,7 +386,17 @@ function QuestionCard({
 }
 
 // ── Revelation Phase ─────────────────────────────────────────────────────────
-function RevelationPhase({ result, answers }: { result: DiagnosticResult; answers: DiagnosticAnswers }) {
+function RevelationPhase({
+  result,
+  answers,
+  isViewingShared,
+  onRestart,
+}: {
+  result: DiagnosticResult;
+  answers: DiagnosticAnswers;
+  isViewingShared: boolean;
+  onRestart: () => void;
+}) {
   const [metersAnimated, setMetersAnimated] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -400,8 +412,13 @@ function RevelationPhase({ result, answers }: { result: DiagnosticResult; answer
   const dominantScore = result[result.dominantLeak];
 
   const handleShare = async () => {
-    const text = buildShareCliffhanger(result);
-    await navigator.clipboard.writeText(text);
+    const shareUrl = buildShareUrl(answers);
+    const text = buildShareCliffhanger(result, shareUrl);
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+    } catch {
+      await navigator.clipboard.writeText(text);
+    }
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
   };
@@ -413,6 +430,27 @@ function RevelationPhase({ result, answers }: { result: DiagnosticResult; answer
       transition={{ duration: 0.6 }}
       className="space-y-10"
     >
+      {/* Shared-viewer banner */}
+      {isViewingShared && (
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="rounded-xl border border-[hsl(38_92%_50%/0.3)] bg-[hsl(38_92%_50%/0.06)] px-4 py-3 flex items-center justify-between gap-3"
+        >
+          <p className="text-sm text-foreground/80 leading-snug">
+            <span className="font-semibold text-[hsl(38_92%_50%)]">מישהו שיתף אותך</span> באבחון שלו.{" "}
+            רוצה לראות איפה <span className="font-medium">אתה</span> עומד?
+          </p>
+          <button
+            onClick={onRestart}
+            className="shrink-0 text-xs font-semibold px-3 py-1.5 rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
+          >
+            עשה את האבחון שלי
+          </button>
+        </motion.div>
+      )}
+
       {/* Header */}
       <div className="text-center space-y-3">
         <motion.div
@@ -542,10 +580,24 @@ export function DiagnosticSection() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<DiagnosticAnswers>({});
   const [microRevealResource, setMicroRevealResource] = useState<ResourceType | null>(null);
+  const [isViewingShared, setIsViewingShared] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
-  // Restore partial progress
+  // On mount: check for shared result in URL hash, else restore partial progress
   useEffect(() => {
+    if (typeof window !== "undefined" && window.location.hash.includes("d=")) {
+      const decoded = decodeDiagnosticFromHash(window.location.hash);
+      if (decoded) {
+        setAnswers(decoded);
+        setPhase("result");
+        setIsViewingShared(true);
+        setTimeout(() => {
+          sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 300);
+        return;
+      }
+    }
+    // No shared hash — restore partial progress from localStorage
     try {
       const saved = localStorage.getItem("cor-sys-diagnostic");
       if (saved) setAnswers(JSON.parse(saved));
@@ -594,10 +646,19 @@ export function DiagnosticSection() {
 
   const handleComputingDone = useCallback(() => {
     setPhase("result");
+    // Write shareable hash to URL (no page reload)
+    try {
+      const encoded = btoa(
+        ["q1","q2","q3","q4","q5","q6","q7","q8","q9"]
+          .map((id) => String(answers[id] ?? "0"))
+          .join("")
+      );
+      history.replaceState(null, "", `${window.location.pathname}#d=${encoded}`);
+    } catch { /* ignore */ }
     setTimeout(() => {
       sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 100);
-  }, []);
+  }, [answers]);
 
   const handlePrev = () => {
     if (currentIndex > 0) setCurrentIndex((i) => i - 1);
@@ -614,7 +675,9 @@ export function DiagnosticSection() {
     setCurrentIndex(0);
     setAnswers({});
     setMicroRevealResource(null);
+    setIsViewingShared(false);
     localStorage.removeItem("cor-sys-diagnostic");
+    try { history.replaceState(null, "", window.location.pathname); } catch { /* ignore */ }
   };
 
   // Compute partial score for micro-revelation
@@ -805,7 +868,7 @@ export function DiagnosticSection() {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <RevelationPhase result={result} answers={answers} />
+                  <RevelationPhase result={result} answers={answers} isViewingShared={isViewingShared} onRestart={handleReset} />
                   <button
                     onClick={handleReset}
                     className="mt-6 w-full text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors"
