@@ -13,6 +13,7 @@ import {
   Share2,
   Check,
   Loader2,
+  Mail,
 } from "lucide-react";
 import {
   DIAGNOSTIC_QUESTIONS,
@@ -399,6 +400,10 @@ function RevelationPhase({
 }) {
   const [metersAnimated, setMetersAnimated] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [email, setEmail] = useState("");
+  const [emailSubmitted, setEmailSubmitted] = useState(() => {
+    try { return !!localStorage.getItem("cor-sys-email"); } catch { return false; }
+  });
 
   const cta = getDynamicCTA(result);
   const mirrorSentence = buildMirrorSentence(answers, result.dominantLeak);
@@ -410,6 +415,21 @@ function RevelationPhase({
 
   const dominantLabel = RESOURCE_LABELS[result.dominantLeak];
   const dominantScore = result[result.dominantLeak];
+
+  const handleEmailSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim()) return;
+    try {
+      localStorage.setItem("cor-sys-email", JSON.stringify({
+        email: email.trim(),
+        healthIndex: result.healthIndex,
+        dominantLeak: result.dominantLeak,
+        leakScore: result[result.dominantLeak].leakScore,
+        ts: Date.now(),
+      }));
+    } catch { /* ignore */ }
+    setEmailSubmitted(true);
+  };
 
   const handleShare = async () => {
     const shareUrl = buildShareUrl(answers);
@@ -538,6 +558,44 @@ function RevelationPhase({
         <p className="text-center text-xs text-muted-foreground">
           המספרים האלה לא היו מדידים — עד עכשיו.
         </p>
+      </motion.div>
+
+      {/* Email capture — at peak aha moment */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 2.5 }}
+      >
+        {emailSubmitted ? (
+          <div className="flex items-center justify-center gap-2 py-3 rounded-xl border border-primary/20 bg-primary/5 text-sm text-primary font-medium">
+            <Check className="h-4 w-4" />
+            שלחנו לך את הניתוח המלא
+          </div>
+        ) : (
+          <form onSubmit={handleEmailSubmit} className="space-y-2">
+            <p className="text-xs text-muted-foreground text-center">
+              רוצה לקבל את האבחון המלא עם המלצות ספציפיות לדליפה שלך?
+            </p>
+            <div className="flex gap-2">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="המייל שלך"
+                required
+                dir="ltr"
+                className="flex-1 min-w-0 rounded-xl border border-border/40 bg-card/40 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/50 focus:bg-card/60 transition-all"
+              />
+              <button
+                type="submit"
+                className="shrink-0 flex items-center gap-2 px-4 py-3 rounded-xl bg-primary/15 border border-primary/30 text-primary text-sm font-semibold hover:bg-primary/25 transition-colors"
+              >
+                <Mail className="h-4 w-4" />
+                שלח
+              </button>
+            </div>
+          </form>
+        )}
       </motion.div>
 
       {/* Dynamic CTA — mentor archetype */}
