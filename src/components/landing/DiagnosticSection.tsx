@@ -14,6 +14,7 @@ import {
   Check,
   Loader2,
   Mail,
+  CalendarDays,
 } from "lucide-react";
 import {
   DIAGNOSTIC_QUESTIONS,
@@ -611,18 +612,28 @@ function RevelationPhase({
         </p>
 
         <a
-          href={cta.whatsappUrl}
+          href="https://calendly.com/erez2812345/30min"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center justify-center gap-3 w-full px-6 py-4 rounded-xl bg-primary text-primary-foreground font-bold text-base hover:opacity-90 transition-opacity shadow-lg shadow-primary/25 glow-primary"
         >
-          <MessageCircle className="h-5 w-5" />
-          שיחת 15 דקות, חינם
+          <CalendarDays className="h-5 w-5" />
+          קבע שיחת 30 דקות, חינם
+        </a>
+
+        <a
+          href={cta.whatsappUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center gap-3 w-full px-6 py-3 rounded-xl border border-border/40 text-foreground text-sm font-medium hover:border-primary/40 hover:bg-primary/5 transition-all"
+        >
+          <MessageCircle className="h-4 w-4" />
+          או שלח הודעה בוואטסאפ
         </a>
 
         {/* Share as cliffhanger */}
-        <Button variant="outline" className="w-full gap-2 border-border/40" onClick={handleShare}>
-          {copied ? <Check className="h-4 w-4" /> : <Share2 className="h-4 w-4" />}
+        <Button variant="ghost" className="w-full gap-2 text-muted-foreground text-xs" onClick={handleShare}>
+          {copied ? <Check className="h-3.5 w-3.5" /> : <Share2 className="h-3.5 w-3.5" />}
           {copied ? "הועתק!" : "הדליפה שלי היא ב... — שתף אתגר"}
         </Button>
       </motion.div>
