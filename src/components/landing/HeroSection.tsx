@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, ChevronDown, Shield, Award, TrendingUp } from "lucide-react";
+import { MessageCircle, ChevronDown, Shield, Award, TrendingUp, Activity } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence, useMotionValue, useTransform, useScroll } from "framer-motion";
 import erezPhoto from "@/assets/erez-profile.png";
@@ -48,11 +48,11 @@ export function HeroSection() {
   const orbX2 = useTransform(mouseX, [-0.5, 0.5], [15, -15]);
   const orbY2 = useTransform(mouseY, [-0.5, 0.5], [10, -10]);
 
-  const scrollToROI = () => {
-    document.getElementById("roi-engine")?.scrollIntoView({ behavior: "smooth" });
+  const scrollToDiagnostic = () => {
+    document.getElementById("diagnostic-section")?.scrollIntoView({ behavior: "smooth" });
   };
   const scrollToNext = () => {
-    document.getElementById("pain-section")?.scrollIntoView({ behavior: "smooth" });
+    document.getElementById("diagnostic-section")?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
@@ -202,21 +202,21 @@ export function HeroSection() {
             <div className="flex flex-col sm:flex-row gap-3 justify-center items-center w-full sm:w-auto">
               <Button
                 size="lg"
-                asChild
+                onClick={scrollToDiagnostic}
                 className="gap-3 text-base md:text-lg px-8 md:px-10 py-6 md:py-7 shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all hover:scale-[1.03] glow-primary w-full sm:w-auto"
               >
-                <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
-                  <MessageCircle className="h-5 w-5" />
-                  שיחת אבחון ראשונית, חינם
-                </a>
+                <Activity className="h-5 w-5" />
+                בצע אבחון מיידי, חינם
               </Button>
-              <Button variant="outline" size="lg" onClick={scrollToROI} className="gap-2 px-6 md:px-8 py-5 md:py-6 border-border/50 hover:border-primary/40 transition-all w-full sm:w-auto">
-                <Shield className="h-5 w-5 shrink-0" />
-                <span>חשב עלות אי-העשייה</span>
+              <Button variant="outline" size="lg" asChild className="gap-2 px-6 md:px-8 py-5 md:py-6 border-border/50 hover:border-primary/40 transition-all w-full sm:w-auto">
+                <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
+                  <MessageCircle className="h-5 w-5 shrink-0" />
+                  <span>שיחה ישירה עם ארז</span>
+                </a>
               </Button>
             </div>
             <p className="text-xs text-muted-foreground/70">
-              15 דקות בוואטסאפ · אפס התחייבות · אפס מכירות
+              90 שניות · ללא הרשמה · תקבל תוצאה מיידית
             </p>
           </motion.div>
         </div>

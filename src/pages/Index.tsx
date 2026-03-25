@@ -19,8 +19,8 @@ const Index = () => {
       <ScrollProgress />
       <StickyNav />
       <HeroSection />
-      <PainSection />
       <DiagnosticSection />
+      <PainSection />
       <BridgeSection />
       <SuccessStoriesCarousel />
       <HowItWorksSection />
