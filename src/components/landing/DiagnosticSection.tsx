@@ -51,6 +51,23 @@ const RESOURCE_BLOCK_ENDS: Record<number, ResourceType> = {
   8: "attention", // after q9 → goes to computing phase instead
 };
 
+// ── Typewriter Effect Hook ────────────────────────────────────────────────────
+function useTypewriter(text: string, active: boolean, speed = 22): string {
+  const [displayed, setDisplayed] = useState("");
+  useEffect(() => {
+    if (!active || !text) { setDisplayed(""); return; }
+    setDisplayed("");
+    let i = 0;
+    const id = setInterval(() => {
+      i++;
+      setDisplayed(text.slice(0, i));
+      if (i >= text.length) clearInterval(id);
+    }, speed);
+    return () => clearInterval(id);
+  }, [text, active, speed]);
+  return displayed;
+}
+
 // ── SVG Circular Progress Meter ─────────────────────────────────────────────
 function ResourceMeter({
   score,
@@ -392,14 +409,17 @@ function RevelationPhase({
   result,
   answers,
   isViewingShared,
+  isReturningVisitor,
   onRestart,
 }: {
   result: DiagnosticResult;
   answers: DiagnosticAnswers;
   isViewingShared: boolean;
+  isReturningVisitor: boolean;
   onRestart: () => void;
 }) {
   const [metersAnimated, setMetersAnimated] = useState(false);
+  const [showMirror, setShowMirror] = useState(false);
   const [copied, setCopied] = useState(false);
   const [email, setEmail] = useState("");
   const [emailSubmitted, setEmailSubmitted] = useState(() => {
@@ -408,10 +428,13 @@ function RevelationPhase({
 
   const cta = getDynamicCTA(result);
   const mirrorSentence = buildMirrorSentence(answers, result.dominantLeak);
+  const typedMirror = useTypewriter(mirrorSentence, showMirror);
 
   useEffect(() => {
-    const t = setTimeout(() => setMetersAnimated(true), 100);
-    return () => clearTimeout(t);
+    const t1 = setTimeout(() => setMetersAnimated(true), 100);
+    // HOLD 0.8s after health index appears (delay 1.6s) → mirror at 2.4s
+    const t2 = setTimeout(() => setShowMirror(true), 2400);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
 
   const dominantLabel = RESOURCE_LABELS[result.dominantLeak];
@@ -451,6 +474,29 @@ function RevelationPhase({
       transition={{ duration: 0.6 }}
       className="space-y-10"
     >
+      {/* Returning visitor banner — secondary immune response */}
+      {isReturningVisitor && (
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 flex items-center justify-between gap-3"
+        >
+          <p className="text-sm text-foreground/80 leading-snug">
+            <span className="font-semibold text-primary">חזרת.</span>{" "}
+            ה-Health Index שלך עדיין:{" "}
+            <span className="font-bold" style={{ color: result.healthColor }}>{result.healthIndex}/100</span>.{" "}
+            הדברים שזיהינו לא נעלמו.
+          </p>
+          <button
+            onClick={onRestart}
+            className="shrink-0 text-xs font-semibold px-3 py-1.5 rounded-lg border border-border/40 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            עשה מחדש
+          </button>
+        </motion.div>
+      )}
+
       {/* Shared-viewer banner */}
       {isViewingShared && (
         <motion.div
@@ -542,12 +588,20 @@ function RevelationPhase({
             </span>
           </p>
 
-          {/* Mirror: reflect the user's own answers back */}
-          {mirrorSentence && (
-            <p className="text-sm text-foreground/80 leading-relaxed border-r-2 pr-3" style={{ borderColor: RESOURCE_COLORS[result.dominantLeak] }}>
-              {mirrorSentence}
-            </p>
-          )}
+          {/* Mirror: reflect the user's own answers back — staged anagnorisis */}
+          <AnimatePresence>
+            {showMirror && mirrorSentence && (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.4 }}
+                className="text-sm text-foreground/80 leading-relaxed border-r-2 pr-3 min-h-[1.25rem]"
+                style={{ borderColor: RESOURCE_COLORS[result.dominantLeak] }}
+              >
+                {typedMirror}
+              </motion.p>
+            )}
+          </AnimatePresence>
 
           <p className="text-sm text-muted-foreground">
             תרגום לזמן: ~
@@ -611,6 +665,10 @@ function RevelationPhase({
           {cta.text}
         </p>
 
+        <p className="text-center text-xs text-muted-foreground/60 italic">
+          הבהירות שאתה מרגיש עכשיו — היא אמיתית. היא גם דועכת.
+        </p>
+
         <a
           href="https://calendly.com/erez2812345/30min"
           target="_blank"
@@ -650,6 +708,7 @@ export function DiagnosticSection() {
   const [answers, setAnswers] = useState<DiagnosticAnswers>({});
   const [microRevealResource, setMicroRevealResource] = useState<ResourceType | null>(null);
   const [isViewingShared, setIsViewingShared] = useState(false);
+  const [isReturningVisitor, setIsReturningVisitor] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
   // On mount: check for shared result in URL hash, else restore partial progress
@@ -669,7 +728,18 @@ export function DiagnosticSection() {
     // No shared hash — restore partial progress from localStorage
     try {
       const saved = localStorage.getItem("cor-sys-diagnostic");
-      if (saved) setAnswers(JSON.parse(saved));
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setAnswers(parsed);
+        // Secondary immune response: returning visitor with complete diagnostic → jump to result
+        if (isDiagnosticComplete(parsed)) {
+          setPhase("result");
+          setIsReturningVisitor(true);
+          setTimeout(() => {
+            sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+          }, 300);
+        }
+      }
     } catch { /* ignore */ }
   }, []);
 
@@ -745,6 +815,7 @@ export function DiagnosticSection() {
     setAnswers({});
     setMicroRevealResource(null);
     setIsViewingShared(false);
+    setIsReturningVisitor(false);
     localStorage.removeItem("cor-sys-diagnostic");
     try { history.replaceState(null, "", window.location.pathname); } catch { /* ignore */ }
   };
@@ -937,7 +1008,7 @@ export function DiagnosticSection() {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <RevelationPhase result={result} answers={answers} isViewingShared={isViewingShared} onRestart={handleReset} />
+                  <RevelationPhase result={result} answers={answers} isViewingShared={isViewingShared} isReturningVisitor={isReturningVisitor} onRestart={handleReset} />
                   <button
                     onClick={handleReset}
                     className="mt-6 w-full text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors"

@@ -1,11 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, ChevronDown, Shield, Award, TrendingUp, Activity } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { ChevronDown, Award, Activity } from "lucide-react";
 import { motion, AnimatePresence, useMotionValue, useTransform, useScroll } from "framer-motion";
 import erezPhoto from "@/assets/erez-profile.png";
-
-const WHATSAPP_URL = "https://wa.me/972524545963?text=היי%20ארז%2C%20אשמח%20לשיחת%20אבחון%20ראשונית";
 
 const headlines = [
   { main: "החברה שלך בנויה על גיבורים?", sub: "זו בעיה.", persona: "CEO / מייסד" },
@@ -16,7 +13,6 @@ const headlines = [
 ];
 
 export function HeroSection() {
-  const navigate = useNavigate();
   const [headlineIndex, setHeadlineIndex] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
   const mouseX = useMotionValue(0);
@@ -129,18 +125,6 @@ export function HeroSection() {
               <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
               <span>מומחה לחוסן ארגוני ויציבות מערכתית</span>
             </div>
-            <AnimatePresence mode="wait">
-              <motion.span
-                key={headlineIndex}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.25 }}
-                className="text-xs font-medium text-primary/70"
-              >
-                רלוונטי עבורך: {headlines[headlineIndex].persona}
-              </motion.span>
-            </AnimatePresence>
           </motion.div>
 
           {/* Rotating headline */}
@@ -163,58 +147,34 @@ export function HeroSection() {
             </AnimatePresence>
           </div>
 
-          {/* Description */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.35 }}
-            className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed"
-          >
-            14 יום שמשנים את התמונה. לא עוד ייעוץ רגיל —{" "}
-            <span className="text-foreground font-medium">בדיקה מעמיקה ותיקון ממוקד.</span>
-          </motion.p>
-
-          {/* Trust Badges */}
+          {/* Trust Badge — single proof point */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="flex flex-wrap justify-center gap-3"
+            transition={{ delay: 0.4 }}
+            className="flex justify-center"
           >
-            {[
-              { icon: Award, text: "ניתחתי 100+ ארגונים" },
-              { icon: TrendingUp, text: "+67% הכנסות בסניף קמעונאי" },
-            ].map((badge) => (
-              <div key={badge.text} className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-xs text-muted-foreground bg-secondary/50 border border-border/30">
-                <badge.icon className="h-3.5 w-3.5 text-primary" />
-                {badge.text}
-              </div>
-            ))}
+            <div className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-xs text-muted-foreground bg-secondary/50 border border-border/30">
+              <Award className="h-3.5 w-3.5 text-primary" />
+              ניתחתי 100+ ארגונים
+            </div>
           </motion.div>
 
-          {/* Simplified CTA - 2 buttons max */}
+          {/* Single CTA */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-            className="flex flex-col items-center gap-4 pt-4"
+            transition={{ duration: 0.6, delay: 0.55 }}
+            className="flex flex-col items-center gap-3 pt-4"
           >
-            <div className="flex flex-col sm:flex-row gap-3 justify-center items-center w-full sm:w-auto">
-              <Button
-                size="lg"
-                onClick={scrollToDiagnostic}
-                className="gap-3 text-base md:text-lg px-8 md:px-10 py-6 md:py-7 shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all hover:scale-[1.03] glow-primary w-full sm:w-auto"
-              >
-                <Activity className="h-5 w-5" />
-                בצע אבחון מיידי, חינם
-              </Button>
-              <Button variant="outline" size="lg" asChild className="gap-2 px-6 md:px-8 py-5 md:py-6 border-border/50 hover:border-primary/40 transition-all w-full sm:w-auto">
-                <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
-                  <MessageCircle className="h-5 w-5 shrink-0" />
-                  <span>שיחה ישירה עם ארז</span>
-                </a>
-              </Button>
-            </div>
+            <Button
+              size="lg"
+              onClick={scrollToDiagnostic}
+              className="gap-3 text-base md:text-lg px-10 py-7 shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all hover:scale-[1.03] glow-primary"
+            >
+              <Activity className="h-5 w-5" />
+              בצע אבחון מיידי, חינם
+            </Button>
             <p className="text-xs text-muted-foreground/70">
               90 שניות · ללא הרשמה · תקבל תוצאה מיידית
             </p>
