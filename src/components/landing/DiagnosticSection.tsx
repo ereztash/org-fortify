@@ -12,7 +12,6 @@ import {
   Brain,
   Share2,
   Check,
-  Loader2,
   Mail,
   CalendarDays,
 } from "lucide-react";
@@ -73,14 +72,18 @@ function ResourceMeter({
   score,
   delayMs,
   animate,
+  isDominant = false,
 }: {
   score: ResourceScore;
   delayMs: number;
   animate: boolean;
+  isDominant?: boolean;
 }) {
   const circumference = 2 * Math.PI * 50;
   const dashOffset = circumference - (score.leakScore / 100) * circumference;
   const Icon = RESOURCE_ICONS[score.resource];
+  const strokeW = isDominant ? 11 : 9;
+  const glowStrength = isDominant ? `drop-shadow(0 0 10px ${score.color}cc) drop-shadow(0 0 20px ${score.color}55)` : `drop-shadow(0 0 5px ${score.color}70)`;
 
   return (
     <motion.div
@@ -89,31 +92,50 @@ function ResourceMeter({
       transition={{ duration: 0.5, delay: delayMs / 1000 }}
       className="flex flex-col items-center gap-3"
     >
-      <div className="relative w-28 h-28 md:w-32 md:h-32">
+      {/* Ring outer glow for dominant */}
+      <div className={`relative ${isDominant ? "w-36 h-36 md:w-40 md:h-40" : "w-24 h-24 md:w-28 md:h-28"}`}>
+        {isDominant && (
+          <motion.div
+            className="absolute inset-0 rounded-full"
+            style={{ boxShadow: `0 0 28px 4px ${score.color}35, 0 0 56px 8px ${score.color}18` }}
+            animate={{ opacity: [0.6, 1, 0.6] }}
+            transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+          />
+        )}
         <svg viewBox="0 0 120 120" className="w-full h-full -rotate-90">
-          <circle cx="60" cy="60" r="50" fill="none" stroke="hsl(215 25% 15%)" strokeWidth="10" />
+          <circle cx="60" cy="60" r="50" fill="none" stroke="hsl(215 25% 15%)" strokeWidth={strokeW} />
           <circle
             cx="60" cy="60" r="50" fill="none"
-            stroke={score.color} strokeWidth="10" strokeLinecap="round"
+            stroke={score.color} strokeWidth={strokeW} strokeLinecap="round"
             strokeDasharray={circumference}
             strokeDashoffset={animate ? dashOffset : circumference}
             style={{
               transition: `stroke-dashoffset 1.4s ease ${delayMs}ms`,
-              filter: `drop-shadow(0 0 6px ${score.color}80)`,
+              filter: glowStrength,
             }}
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-2xl font-bold font-display" style={{ color: score.color }}>
+          <span
+            className={`font-bold font-display ${isDominant ? "text-3xl" : "text-xl"}`}
+            style={{ color: score.color, textShadow: isDominant ? `0 0 20px ${score.color}80` : "none" }}
+          >
             {score.leakScore}%
           </span>
-          <span className="text-[10px] text-muted-foreground">דליפה</span>
+          <span className="text-[10px] text-muted-foreground mt-0.5">דליפה</span>
         </div>
       </div>
       <div className="text-center space-y-1">
         <div className="flex items-center justify-center gap-1.5">
-          <Icon className="h-3.5 w-3.5" style={{ color: score.color }} />
-          <span className="text-sm font-semibold text-foreground">{RESOURCE_LABELS[score.resource]}</span>
+          <Icon className={isDominant ? "h-4 w-4" : "h-3.5 w-3.5"} style={{ color: score.color }} />
+          <span className={`font-semibold text-foreground ${isDominant ? "text-base" : "text-sm"}`}>
+            {RESOURCE_LABELS[score.resource]}
+          </span>
+          {isDominant && (
+            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full" style={{ color: score.color, background: `${score.color}20`, border: `1px solid ${score.color}40` }}>
+              ↑ מוביל
+            </span>
+          )}
         </div>
         <span
           className="text-xs px-2 py-0.5 rounded-full font-medium"
@@ -271,8 +293,16 @@ function ComputingPhase({ onDone }: { onDone: () => void }) {
             </motion.div>
           );
         })}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <Loader2 className="h-6 w-6 animate-spin text-primary/60" />
+        {/* EKG bars — diagnostic aesthetic, perceived value */}
+        <div className="absolute inset-0 flex items-center justify-center gap-[3px]">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <motion.div
+              key={i}
+              className="w-[3px] rounded-full bg-primary/75"
+              animate={{ height: ["6px", "26px", "10px", "20px", "6px"] }}
+              transition={{ duration: 1.1, repeat: Infinity, delay: i * 0.13, ease: "easeInOut" }}
+            />
+          ))}
         </div>
       </div>
 
@@ -547,6 +577,7 @@ function RevelationPhase({
             score={result[r]}
             delayMs={i * 500}
             animate={metersAnimated}
+            isDominant={r === result.dominantLeak}
           />
         ))}
       </div>
@@ -556,9 +587,14 @@ function RevelationPhase({
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 1.6 }}
-        className="glass rounded-2xl p-6 text-center space-y-3 border border-border/20"
+        className="rounded-2xl p-6 text-center space-y-3 border"
+        style={{
+          background: `linear-gradient(135deg, hsl(222 47% 7% / 0.95), ${result.healthColor}10)`,
+          borderColor: `${result.healthColor}30`,
+          boxShadow: `0 8px 32px -8px ${result.healthColor}25, inset 0 1px 0 ${result.healthColor}15`,
+        }}
       >
-        <p className="text-xs text-muted-foreground font-medium tracking-wider uppercase">
+        <p className="text-xs text-muted-foreground font-medium tracking-widest uppercase">
           System Health Index
         </p>
         <motion.div
@@ -566,16 +602,22 @@ function RevelationPhase({
           animate={{ scale: 1 }}
           transition={{ type: "spring", stiffness: 150, delay: 1.8 }}
           className="text-6xl md:text-7xl font-bold font-display"
-          style={{ color: result.healthColor }}
+          style={{
+            color: result.healthColor,
+            textShadow: `0 0 40px ${result.healthColor}70, 0 0 80px ${result.healthColor}35`,
+          }}
         >
           {result.healthIndex}
         </motion.div>
-        <div
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 2.0 }}
           className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-semibold"
-          style={{ color: result.healthColor, background: `${result.healthColor}15`, border: `1px solid ${result.healthColor}30` }}
+          style={{ color: result.healthColor, background: `${result.healthColor}15`, border: `1px solid ${result.healthColor}40` }}
         >
           {result.healthLabel}
-        </div>
+        </motion.div>
       </motion.div>
 
       {/* Mirror sentence — anagnorisis */}
@@ -600,7 +642,7 @@ function RevelationPhase({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.4 }}
-                className="text-sm text-foreground/80 leading-relaxed border-r-2 pr-3 min-h-[1.25rem]"
+                className="text-base font-medium text-foreground/90 leading-relaxed border-r-[3px] pr-4 min-h-[1.5rem]"
                 style={{ borderColor: RESOURCE_COLORS[result.dominantLeak] }}
               >
                 {typedMirror}
@@ -637,15 +679,28 @@ function RevelationPhase({
           הבהירות שאתה מרגיש עכשיו — היא אמיתית. היא גם דועכת.
         </p>
 
-        <a
-          href="https://calendly.com/erez2812345/30min"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center justify-center gap-3 w-full px-6 py-4 rounded-xl bg-primary text-primary-foreground font-bold text-base hover:opacity-90 transition-opacity shadow-lg shadow-primary/25 glow-primary"
-        >
-          <CalendarDays className="h-5 w-5" />
-          קבע שיחת 30 דקות, חינם
-        </a>
+        <div className="relative">
+          {/* Pulse ring — draws attention to primary CTA */}
+          <motion.div
+            className="absolute -inset-1 rounded-xl bg-primary/20"
+            animate={{ scale: [1, 1.06], opacity: [0.5, 0] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: "easeOut" }}
+          />
+          <motion.div
+            className="absolute -inset-1 rounded-xl bg-primary/10"
+            animate={{ scale: [1, 1.1], opacity: [0.3, 0] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: "easeOut", delay: 0.3 }}
+          />
+          <a
+            href="https://calendly.com/erez2812345/30min"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="relative flex items-center justify-center gap-3 w-full px-6 py-4 rounded-xl bg-primary text-primary-foreground font-bold text-base hover:opacity-90 transition-opacity shadow-lg shadow-primary/30 glow-primary"
+          >
+            <CalendarDays className="h-5 w-5" />
+            קבע שיחת 30 דקות, חינם
+          </a>
+        </div>
 
         <a
           href={cta.whatsappUrl}

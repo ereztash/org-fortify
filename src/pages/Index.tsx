@@ -12,8 +12,21 @@ import { LandingFooter } from "@/components/landing/LandingFooter";
 import { LandingWhatsAppFAB } from "@/components/landing/WhatsAppFAB";
 import { StickyNav } from "@/components/landing/StickyNav";
 import { ScrollProgress } from "@/components/landing/ScrollProgress";
+import { useScrollDepth, useSectionVisibility } from "@/hooks/useScrollDepth";
 
 const Index = () => {
+  useScrollDepth();
+
+  // Section visibility — fired once per section per session
+  useSectionVisibility("hero-section", "Hero");
+  useSectionVisibility("diagnostic-section", "Diagnostic");
+  useSectionVisibility("pain-section", "Pain");
+  useSectionVisibility("bridge-section", "Bridge");
+  useSectionVisibility("success-stories", "SuccessStories");
+  useSectionVisibility("how-it-works", "HowItWorks");
+  useSectionVisibility("roi-engine", "ROIEngine");
+  useSectionVisibility("faq-section", "FAQ");
+
   return (
     <div className="min-h-screen bg-background">
       <ScrollProgress />
