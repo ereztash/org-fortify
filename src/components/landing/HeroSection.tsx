@@ -109,6 +109,8 @@ export function HeroSection() {
               <img
                 src={erezPhoto}
                 alt="ארז טל שיר, מומחה לחוסן ארגוני"
+                loading="eager"
+                fetchPriority="high"
                 className="relative h-20 w-20 md:h-28 md:w-28 rounded-full object-cover border-2 border-primary/40 shadow-lg shadow-primary/20"
               />
             </div>

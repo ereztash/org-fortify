@@ -85,6 +85,20 @@ const RESOURCE_BLOCK_ENDS: Record<number, ResourceType> = {
   8: "attention", // after q9 → goes to computing phase instead
 };
 
+// ── Analytics — Plausible + GTM dual-track ───────────────────────────────────
+function trackEvent(name: string, props?: Record<string, string | number>) {
+  try {
+    // Plausible
+    if (typeof window !== "undefined" && (window as any).plausible) {
+      (window as any).plausible(name, { props });
+    }
+    // GTM dataLayer fallback
+    if (typeof window !== "undefined" && (window as any).dataLayer) {
+      (window as any).dataLayer.push({ event: name, ...props });
+    }
+  } catch { /* analytics must never break UX */ }
+}
+
 // ── Typewriter Effect Hook ────────────────────────────────────────────────────
 function useTypewriter(text: string, active: boolean, speed = 22): string {
   const [displayed, setDisplayed] = useState("");
@@ -514,8 +528,9 @@ function RevelationPhase({
   };
 
   const openCalendlyPopup = useCallback(() => {
+    trackEvent("calendly_clicked", { dominant_leak: result.dominantLeak, health_index: result.healthIndex, leak_score: leakScore });
     openCalendly(result.dominantLeak, "diagnostic", leakScore);
-  }, [result.dominantLeak, leakScore]);
+  }, [result.dominantLeak, result.healthIndex, leakScore]);
 
   useEffect(() => {
     const t1 = setTimeout(() => setMetersAnimated(true), 100);
@@ -534,6 +549,7 @@ function RevelationPhase({
   const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim()) return;
+    trackEvent("email_captured", { dominant_leak: result.dominantLeak, health_index: result.healthIndex });
     try {
       localStorage.setItem("cor-sys-email", JSON.stringify({
         email: email.trim(),
@@ -912,6 +928,7 @@ export function DiagnosticSection() {
 
   const handleComputingDone = useCallback(() => {
     setPhase("result");
+    trackEvent("wizard_completed");
     // Write shareable hash to URL (no page reload)
     try {
       const encoded = btoa(
@@ -934,6 +951,7 @@ export function DiagnosticSection() {
   const handleStart = () => {
     setPhase("questions");
     setCurrentIndex(0);
+    trackEvent("wizard_started");
   };
 
   const handleReset = () => {

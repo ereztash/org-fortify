@@ -15,7 +15,7 @@ export default {
     extend: {
       fontFamily: {
         hebrew: ['"IBM Plex Sans Hebrew"', 'sans-serif'],
-        display: ['"Space Grotesk"', 'sans-serif'],
+        display: ['"Rubik"', '"IBM Plex Sans Hebrew"', 'sans-serif'],
         serif: ['"Playfair Display"', 'serif'],
       },
       colors: {
