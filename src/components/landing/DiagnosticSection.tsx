@@ -421,6 +421,7 @@ function RevelationPhase({
   const [metersAnimated, setMetersAnimated] = useState(false);
   const [showMirror, setShowMirror] = useState(false);
   const [copied, setCopied] = useState(false);
+  const ctaRef = useRef<HTMLDivElement>(null);
   const [email, setEmail] = useState("");
   const [emailSubmitted, setEmailSubmitted] = useState(() => {
     try { return !!localStorage.getItem("cor-sys-email"); } catch { return false; }
@@ -434,7 +435,11 @@ function RevelationPhase({
     const t1 = setTimeout(() => setMetersAnimated(true), 100);
     // HOLD 0.8s after health index appears (delay 1.6s) → mirror at 2.4s
     const t2 = setTimeout(() => setShowMirror(true), 2400);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
+    // Auto-scroll to CTA when it appears so user never misses it
+    const t3 = setTimeout(() => {
+      ctaRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }, 2700);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   }, []);
 
   const dominantLabel = RESOURCE_LABELS[result.dominantLeak];
@@ -615,50 +620,13 @@ function RevelationPhase({
         </p>
       </motion.div>
 
-      {/* Email capture — at peak aha moment */}
+      {/* Primary CTA — Calendly first, visible immediately after aha moment */}
       <motion.div
+        ref={ctaRef}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 2.5 }}
-      >
-        {emailSubmitted ? (
-          <div className="flex items-center justify-center gap-2 py-3 rounded-xl border border-primary/20 bg-primary/5 text-sm text-primary font-medium">
-            <Check className="h-4 w-4" />
-            שלחנו לך את הניתוח המלא
-          </div>
-        ) : (
-          <form onSubmit={handleEmailSubmit} className="space-y-2">
-            <p className="text-xs text-muted-foreground text-center">
-              רוצה לקבל את האבחון המלא עם המלצות ספציפיות לדליפה שלך?
-            </p>
-            <div className="flex gap-2">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="המייל שלך"
-                required
-                dir="ltr"
-                className="flex-1 min-w-0 rounded-xl border border-border/40 bg-card/40 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/50 focus:bg-card/60 transition-all"
-              />
-              <button
-                type="submit"
-                className="shrink-0 flex items-center gap-2 px-4 py-3 rounded-xl bg-primary/15 border border-primary/30 text-primary text-sm font-semibold hover:bg-primary/25 transition-colors"
-              >
-                <Mail className="h-4 w-4" />
-                שלח
-              </button>
-            </div>
-          </form>
-        )}
-      </motion.div>
-
-      {/* Dynamic CTA — mentor archetype */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 2.6 }}
-        className="space-y-4"
+        className="space-y-3"
       >
         {/* Mentor message */}
         <p className="text-center text-sm text-foreground font-medium leading-relaxed">
@@ -688,6 +656,45 @@ function RevelationPhase({
           <MessageCircle className="h-4 w-4" />
           או שלח הודעה בוואטסאפ
         </a>
+      </motion.div>
+
+      {/* Secondary: Email capture + Share — below the fold intentionally */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 3.0 }}
+        className="space-y-3 pt-2 border-t border-border/20"
+      >
+        {emailSubmitted ? (
+          <div className="flex items-center justify-center gap-2 py-2 text-xs text-primary/70 font-medium">
+            <Check className="h-3.5 w-3.5" />
+            שלחנו לך את הניתוח המלא
+          </div>
+        ) : (
+          <form onSubmit={handleEmailSubmit} className="space-y-2">
+            <p className="text-xs text-muted-foreground text-center">
+              רוצה לקבל את האבחון המלא עם המלצות ספציפיות לדליפה שלך?
+            </p>
+            <div className="flex gap-2">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="המייל שלך"
+                required
+                dir="ltr"
+                className="flex-1 min-w-0 rounded-xl border border-border/40 bg-card/40 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/50 focus:bg-card/60 transition-all"
+              />
+              <button
+                type="submit"
+                className="shrink-0 flex items-center gap-2 px-4 py-3 rounded-xl bg-primary/15 border border-primary/30 text-primary text-sm font-semibold hover:bg-primary/25 transition-colors"
+              >
+                <Mail className="h-4 w-4" />
+                שלח
+              </button>
+            </div>
+          </form>
+        )}
 
         {/* Share as cliffhanger */}
         <Button variant="ghost" className="w-full gap-2 text-muted-foreground text-xs" onClick={handleShare}>
