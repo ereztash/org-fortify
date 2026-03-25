@@ -36,6 +36,41 @@ import {
   ResourceScore,
 } from "@/lib/diagnosticScoring";
 
+// ── Calendly popup global declaration ────────────────────────────────────────
+declare global {
+  interface Window {
+    Calendly?: {
+      initPopupWidget: (options: { url: string }) => void;
+      closePopupWidget: () => void;
+    };
+  }
+}
+
+const CALENDLY_BASE = "https://calendly.com/erez2812345/30min";
+
+function getLeakCTA(dominantLeak: ResourceType): string {
+  const map: Record<ResourceType, string> = {
+    time:      "קבע שיחה על דליפת הזמן שלך — 30 דקות, חינם",
+    money:     "קבע שיחה על דליפת הכסף שלך — 30 דקות, חינם",
+    attention: "קבע שיחה על דליפת הקשב שלך — 30 דקות, חינם",
+  };
+  return map[dominantLeak];
+}
+
+function openCalendly(dominantLeak: ResourceType, source = "diagnostic", leakScore?: number) {
+  const params = new URLSearchParams({
+    utm_source: source,
+    utm_campaign: dominantLeak,
+    ...(leakScore !== undefined && { utm_content: String(leakScore) }),
+  });
+  const url = `${CALENDLY_BASE}?${params}`;
+  if (window.Calendly) {
+    window.Calendly.initPopupWidget({ url });
+  } else {
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
+}
+
 // ── Resource icons ──────────────────────────────────────────────────────────
 const RESOURCE_ICONS: Record<ResourceType, typeof Clock> = {
   time: Clock,
@@ -471,6 +506,17 @@ function RevelationPhase({
   const mirrorSentence = buildMirrorSentence(answers, result.dominantLeak);
   const typedMirror = useTypewriter(mirrorSentence, showMirror);
 
+  const leakScore = result[result.dominantLeak].leakScore;
+  const LEAK_HOOK: Record<ResourceType, string> = {
+    time:      `${leakScore}% מהזמן שלך נגרר לשווא — בואו נעצור את זה`,
+    money:     `${leakScore}% מהמשאב הכלכלי שלך נדלף — בואו נמפה את זה`,
+    attention: `${leakScore}% מהקשב הניהולי שלך מבוזבז — בואו נדון בזה`,
+  };
+
+  const openCalendlyPopup = useCallback(() => {
+    openCalendly(result.dominantLeak, "diagnostic", leakScore);
+  }, [result.dominantLeak, leakScore]);
+
   useEffect(() => {
     const t1 = setTimeout(() => setMetersAnimated(true), 100);
     // HOLD 0.8s after health index appears (delay 1.6s) → mirror at 2.4s
@@ -685,6 +731,17 @@ function RevelationPhase({
           {cta.text}
         </p>
 
+        {/* Personalized hook — specific to dominant leak + score */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="text-center text-sm font-semibold"
+          style={{ color: RESOURCE_COLORS[result.dominantLeak] }}
+        >
+          {LEAK_HOOK[result.dominantLeak]}.
+        </motion.p>
+
         <p className="text-center text-xs text-muted-foreground/60 italic">
           הבהירות שאתה מרגיש עכשיו — היא אמיתית. היא גם דועכת.
         </p>
@@ -701,15 +758,13 @@ function RevelationPhase({
             animate={{ scale: [1, 1.1], opacity: [0.3, 0] }}
             transition={{ duration: 1.8, repeat: Infinity, ease: "easeOut", delay: 0.3 }}
           />
-          <a
-            href="https://calendly.com/erez2812345/30min"
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            onClick={openCalendlyPopup}
             className="relative flex items-center justify-center gap-3 w-full px-6 py-4 rounded-xl bg-primary text-primary-foreground font-bold text-base hover:opacity-90 transition-opacity shadow-lg shadow-primary/30 glow-primary"
           >
             <CalendarDays className="h-5 w-5" />
-            קבע שיחת 30 דקות, חינם
-          </a>
+            {getLeakCTA(result.dominantLeak)}
+          </button>
         </div>
 
         <a
@@ -1112,15 +1167,13 @@ export function DiagnosticSection() {
             className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
           >
             <div className="bg-background/95 backdrop-blur-md border-t border-border/20 px-4 py-3 safe-area-bottom">
-              <a
-                href="https://calendly.com/erez2812345/30min"
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                onClick={() => result && openCalendly(result.dominantLeak, "diagnostic-sticky")}
                 className="flex items-center justify-center gap-2 w-full px-5 py-3.5 rounded-xl bg-primary text-primary-foreground font-bold text-sm shadow-lg shadow-primary/25"
               >
                 <CalendarDays className="h-4 w-4" />
-                קבע שיחת 30 דקות — חינם
-              </a>
+                {result ? getLeakCTA(result.dominantLeak) : "קבע שיחה — 30 דקות, חינם"}
+              </button>
             </div>
           </motion.div>
         )}
