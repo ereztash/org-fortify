@@ -424,6 +424,16 @@ function QuestionCard({
             ))}
           </div>
 
+          {/* Affordance hint — fades after 2.5s, teaches the slider pattern once */}
+          <motion.p
+            initial={{ opacity: 0.7 }}
+            animate={{ opacity: 0 }}
+            transition={{ delay: 2.5, duration: 0.8 }}
+            className="text-center text-xs text-muted-foreground/50 pointer-events-none"
+          >
+            ← גרור או לחץ על מספר →
+          </motion.p>
+
           <Button onClick={onNext} disabled={currentValue === undefined} className="w-full gap-2">
             המשך
             <ChevronLeft className="h-4 w-4" />
@@ -662,12 +672,12 @@ function RevelationPhase({
         </p>
       </motion.div>
 
-      {/* Primary CTA — Calendly first, visible immediately after aha moment */}
+      {/* Primary CTA — appears at peak motivation window (right after health index) */}
       <motion.div
         ref={ctaRef}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 2.5 }}
+        transition={{ delay: 2.0 }}
         className="space-y-3"
       >
         {/* Mentor message */}
@@ -954,22 +964,35 @@ export function DiagnosticSection() {
                   transition={{ duration: 0.3 }}
                   className="space-y-8"
                 >
-                  <div className="flex justify-center gap-6">
-                    {(["time", "money", "attention"] as ResourceType[]).map((r) => {
-                      const Icon = RESOURCE_ICONS[r];
-                      const color = RESOURCE_COLORS[r];
-                      return (
-                        <div key={r} className="flex flex-col items-center gap-2">
-                          <div
-                            className="w-12 h-12 rounded-xl flex items-center justify-center"
-                            style={{ background: `${color}18`, border: `1px solid ${color}30` }}
-                          >
-                            <Icon className="h-5 w-5" style={{ color }} />
+                  {/* Zeigarnik preview — blurred result teaser creates open-loop curiosity */}
+                  <div className="space-y-2">
+                    <div className="flex justify-center gap-8 opacity-35 blur-[3px] pointer-events-none select-none">
+                      {(["time", "money", "attention"] as ResourceType[]).map((r) => {
+                        const color = RESOURCE_COLORS[r];
+                        const fakePct = r === "time" ? 68 : r === "money" ? 41 : 55;
+                        const circ = 2 * Math.PI * 50;
+                        return (
+                          <div key={r} className="flex flex-col items-center gap-2">
+                            <div className="relative w-16 h-16">
+                              <svg viewBox="0 0 120 120" className="w-full h-full -rotate-90">
+                                <circle cx="60" cy="60" r="50" fill="none" stroke="hsl(215 25% 15%)" strokeWidth="10" />
+                                <circle cx="60" cy="60" r="50" fill="none" stroke={color} strokeWidth="10"
+                                  strokeDasharray={circ} strokeDashoffset={circ - (fakePct / 100) * circ}
+                                  style={{ filter: `drop-shadow(0 0 4px ${color}80)` }}
+                                />
+                              </svg>
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <span className="text-xs font-bold" style={{ color }}>?%</span>
+                              </div>
+                            </div>
+                            <span className="text-[10px] text-muted-foreground">{RESOURCE_LABELS[r]}</span>
                           </div>
-                          <span className="text-xs text-muted-foreground font-medium">{RESOURCE_LABELS[r]}</span>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
+                    <p className="text-center text-[10px] text-muted-foreground/50">
+                      ↑ התוצאות שלך ימלאו כאן
+                    </p>
                   </div>
 
                   <div className="space-y-3 text-center">
@@ -1009,9 +1032,11 @@ export function DiagnosticSection() {
                   transition={{ duration: 0.2 }}
                   className="space-y-6"
                 >
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>שאלה {currentIndex + 1} מתוך {DIAGNOSTIC_QUESTIONS.length}</span>
-                    <span className="font-medium" style={{ color: RESOURCE_COLORS[currentQuestion.resource] }}>
+                  {/* RTL: primary info (שאלה X) at right, resource with live dot at left */}
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-muted-foreground">שאלה {currentIndex + 1} מתוך {DIAGNOSTIC_QUESTIONS.length}</span>
+                    <span className="flex items-center gap-1.5 font-semibold" style={{ color: RESOURCE_COLORS[currentQuestion.resource] }}>
+                      <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: RESOURCE_COLORS[currentQuestion.resource] }} />
                       {RESOURCE_LABELS[currentQuestion.resource]}
                     </span>
                   </div>
@@ -1026,23 +1051,15 @@ export function DiagnosticSection() {
                     />
                   </AnimatePresence>
 
-                  <div className="flex justify-between items-center pt-2">
-                    <Button variant="ghost" size="sm" onClick={handlePrev} className="gap-1.5 text-muted-foreground hover:text-foreground">
-                      <ChevronRight className="h-4 w-4" />
-                      חזור
-                    </Button>
-                    {currentQuestion.format === "mcq" && (
-                      <Button
-                        variant="ghost" size="sm"
-                        disabled={answers[currentQuestion.id] === undefined}
-                        onClick={handleNext}
-                        className="gap-1.5 text-muted-foreground hover:text-foreground"
-                      >
-                        דלג
-                        <ChevronLeft className="h-4 w-4" />
+                  {/* Hick's Law: MCQ auto-advances → hide Back+Skip to reduce choices */}
+                  {currentQuestion.format === "slider" && (
+                    <div className="flex justify-between items-center pt-2">
+                      <Button variant="ghost" size="sm" onClick={handlePrev} className="gap-1.5 text-muted-foreground hover:text-foreground">
+                        <ChevronRight className="h-4 w-4" />
+                        חזור
                       </Button>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </motion.div>
               )}
 
@@ -1083,6 +1100,31 @@ export function DiagnosticSection() {
           </div>
         </motion.div>
       </div>
+
+      {/* Sticky bottom CTA — mobile only, Fitts's Law thumb zone */}
+      <AnimatePresence>
+        {phase === "result" && (
+          <motion.div
+            initial={{ y: 80, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 80, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30, delay: 2.2 }}
+            className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
+          >
+            <div className="bg-background/95 backdrop-blur-md border-t border-border/20 px-4 py-3 safe-area-bottom">
+              <a
+                href="https://calendly.com/erez2812345/30min"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 w-full px-5 py-3.5 rounded-xl bg-primary text-primary-foreground font-bold text-sm shadow-lg shadow-primary/25"
+              >
+                <CalendarDays className="h-4 w-4" />
+                קבע שיחת 30 דקות — חינם
+              </a>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
