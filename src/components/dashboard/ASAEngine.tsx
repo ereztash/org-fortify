@@ -5,8 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Brain, Loader2, Zap } from "lucide-react";
+import { Brain, Loader2, Zap, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface AIInsight {
   content: string;
@@ -73,32 +74,36 @@ export function ASAEngine({ orgId }: { orgId?: string }) {
   };
 
   const typeColors: Record<string, string> = {
-    normalization: "bg-amber-500/20 text-amber-400",
-    contradiction: "bg-red-500/20 text-red-400",
-    structural_failure: "bg-rose-500/20 text-rose-400",
+    normalization: "bg-health-warning/15 text-health-warning border-health-warning/20",
+    contradiction: "bg-health-critical/15 text-health-critical border-health-critical/20",
+    structural_failure: "bg-destructive/15 text-destructive border-destructive/20",
   };
 
   return (
     <div className="space-y-6">
-      <Card className="glass border-border/50">
-        <CardHeader>
+      <Card className="glass-strong border-border/30 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none" />
+        <CardHeader className="relative">
           <CardTitle className="flex items-center gap-2 text-lg">
-            <Brain className="w-5 h-5 text-primary" />
+            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Brain className="w-4 h-4 text-primary" />
+            </div>
             ASA: ניתוח סוקרטי כפול-עדשה
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="relative space-y-4">
           {/* Guided Questions */}
           <div className="space-y-2">
-            <p className="text-xs text-muted-foreground font-medium">שאלות מנחות, לחץ כדי להוסיף לניתוח:</p>
+            <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">שאלות מנחות</p>
             <div className="flex flex-wrap gap-2">
               {guidedQuestions.map((q, i) => (
                 <button
                   key={i}
                   onClick={() => setText((prev) => prev ? `${prev}\n\n${q}` : q)}
-                  className="text-xs text-right px-3 py-2 rounded-lg bg-primary/5 border border-primary/10 text-muted-foreground hover:text-primary hover:border-primary/30 transition-colors max-w-xs"
+                  className="text-xs text-right px-3 py-2 rounded-lg bg-muted/30 border border-border/20 text-muted-foreground hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all duration-200 max-w-xs"
                 >
-                  {q.slice(0, 60)}...
+                  <Sparkles className="w-3 h-3 inline ml-1 opacity-50" />
+                  {q.slice(0, 55)}...
                 </button>
               ))}
             </div>
@@ -108,44 +113,66 @@ export function ASAEngine({ orgId }: { orgId?: string }) {
             placeholder="הדבק טקסט ארגוני לניתוח: פרוטוקול ישיבה, דוח, תלונה, או ענה על השאלות המנחות..."
             value={text}
             onChange={(e) => setText(e.target.value)}
-            className="min-h-[120px] bg-background/50"
+            className="min-h-[120px] bg-background/30 border-border/20 focus:border-primary/40 transition-colors"
           />
-          <Button onClick={analyze} disabled={loading || !text.trim()} className="gap-2">
+          <Button
+            onClick={analyze}
+            disabled={loading || !text.trim()}
+            className="gap-2 glow-primary"
+          >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Brain className="w-4 h-4" />}
             {loading ? "מנתח..." : "הפעל ניתוח"}
           </Button>
         </CardContent>
       </Card>
 
-      {results.length > 0 && (
-        <div className="space-y-3">
-          <h3 className="text-sm font-medium text-muted-foreground">הבזקי תובנה</h3>
-          {results.map((insight, i) => (
-            <Card key={i} className="glass border-border/50">
-              <CardContent className="p-4 space-y-3">
-                <div className="flex items-start justify-between gap-3">
-                  <p className="text-sm text-foreground leading-relaxed">{insight.content}</p>
-                  <Badge variant="outline" className={typeColors[insight.type]}>
-                    {typeLabels[insight.type]}
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="h-1.5 w-24 rounded-full bg-muted overflow-hidden">
-                      <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${insight.weight * 100}%` }} />
+      <AnimatePresence>
+        {results.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-3"
+          >
+            <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">הבזקי תובנה</h3>
+            {results.map((insight, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.1 }}
+              >
+                <Card className="glass-strong border-border/30 overflow-hidden">
+                  <CardContent className="p-4 space-y-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <p className="text-sm text-foreground leading-relaxed">{insight.content}</p>
+                      <Badge variant="outline" className={typeColors[insight.type]}>
+                        {typeLabels[insight.type]}
+                      </Badge>
                     </div>
-                    <span className="text-xs text-muted-foreground">{(insight.weight * 100).toFixed(0)}%</span>
-                  </div>
-                  <Button size="sm" variant="ghost" className="gap-1 text-xs text-primary hover:text-primary" onClick={() => convertToTourniquet(insight, i)}>
-                    <Zap className="w-3 h-3" />
-                    הפוך ל-Tourniquet
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="h-1.5 w-24 rounded-full bg-muted/30 overflow-hidden">
+                          <motion.div
+                            className="h-full rounded-full bg-gradient-to-r from-primary to-primary/60"
+                            initial={{ width: 0 }}
+                            animate={{ width: `${insight.weight * 100}%` }}
+                            transition={{ delay: i * 0.1 + 0.3, duration: 0.6 }}
+                          />
+                        </div>
+                        <span className="text-[10px] text-muted-foreground">{(insight.weight * 100).toFixed(0)}%</span>
+                      </div>
+                      <Button size="sm" variant="ghost" className="gap-1 text-xs text-primary hover:text-primary hover:bg-primary/10" onClick={() => convertToTourniquet(insight, i)}>
+                        <Zap className="w-3 h-3" />
+                        הפוך ל-Tourniquet
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

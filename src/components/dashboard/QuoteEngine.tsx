@@ -26,7 +26,6 @@ export function QuoteEngine() {
 
     setLoading(true);
     try {
-      // Save lead
       await supabase.from("leads").insert({
         name: contactName || "לא צוין",
         email,
@@ -35,7 +34,6 @@ export function QuoteEngine() {
         delta_potential: deltaPotential,
       });
 
-      // Generate quote
       const { data, error } = await supabase.functions.invoke("generate-quote", {
         body: {
           orgName,
@@ -62,32 +60,36 @@ export function QuoteEngine() {
   };
 
   return (
-    <Card className="glass border-border/50">
-      <CardHeader>
+    <Card className="glass-strong border-border/30 overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none" />
+      <CardHeader className="relative">
         <CardTitle className="text-lg flex items-center gap-2">
-          <FileText className="w-5 h-5 text-primary" />
+          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+            <FileText className="w-4 h-4 text-primary" />
+          </div>
           Quote Engine: הצעת ספרינט
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="relative space-y-4">
         <div className="grid grid-cols-2 gap-3">
-          <Input placeholder="שם איש קשר" value={contactName} onChange={(e) => setContactName(e.target.value)} className="bg-background/50" />
-          <Input placeholder="שם הארגון" value={orgName} onChange={(e) => setOrgName(e.target.value)} className="bg-background/50" />
+          <Input placeholder="שם איש קשר" value={contactName} onChange={(e) => setContactName(e.target.value)} className="bg-background/30 border-border/20" />
+          <Input placeholder="שם הארגון" value={orgName} onChange={(e) => setOrgName(e.target.value)} className="bg-background/30 border-border/20" />
         </div>
-        <Input type="email" placeholder="אימייל *" value={email} onChange={(e) => setEmail(e.target.value)} className="bg-background/50 text-left" dir="ltr" required />
-        <Input type="tel" placeholder="טלפון (אופציונלי)" value={phone} onChange={(e) => setPhone(e.target.value)} className="bg-background/50 text-left" dir="ltr" />
+        <Input type="email" placeholder="אימייל *" value={email} onChange={(e) => setEmail(e.target.value)} className="bg-background/30 border-border/20 text-left" dir="ltr" required />
+        <Input type="tel" placeholder="טלפון (אופציונלי)" value={phone} onChange={(e) => setPhone(e.target.value)} className="bg-background/30 border-border/20 text-left" dir="ltr" />
 
-        <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <span>הצעת מחיר: ₪{Math.round(deltaPotential * 0.15).toLocaleString()}</span>
-          <span>15% מעלות אי-עשייה</span>
+        <div className="flex items-center justify-between text-sm p-3 rounded-xl bg-background/20 border border-border/15">
+          <span className="text-muted-foreground">הצעת מחיר</span>
+          <span className="text-primary font-bold font-display text-lg">₪{Math.round(deltaPotential * 0.15).toLocaleString()}</span>
         </div>
+        <p className="text-[10px] text-muted-foreground/60 text-center">15% מעלות אי-עשייה שנתית</p>
 
         <div className="flex gap-3">
-          <Button onClick={generateQuote} disabled={loading} className="flex-1 gap-2">
+          <Button onClick={generateQuote} disabled={loading} className="flex-1 gap-2 glow-primary">
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
             {loading ? "מייצר..." : "הפק הצעת מחיר"}
           </Button>
-          <Button variant="outline" asChild className="gap-2">
+          <Button variant="outline" asChild className="gap-2 border-health-stable/20 text-health-stable hover:bg-health-stable/10">
             <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
               <MessageCircle className="w-4 h-4" />
               דון עם ארז

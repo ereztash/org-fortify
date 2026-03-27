@@ -1,4 +1,5 @@
 import { useCOR } from "@/contexts/CORContext";
+import { motion } from "framer-motion";
 
 export function HealthGauge() {
   const { healthScore, healthLevel, jQuotient, capacity, entropy } = useCOR();
@@ -17,61 +18,74 @@ export function HealthGauge() {
     optimal: "אופטימלי",
   };
 
+  const glowMap = {
+    critical: "drop-shadow(0 0 12px hsl(var(--health-critical) / 0.5))",
+    warning: "drop-shadow(0 0 12px hsl(var(--health-warning) / 0.5))",
+    stable: "drop-shadow(0 0 12px hsl(var(--health-stable) / 0.5))",
+    optimal: "drop-shadow(0 0 12px hsl(var(--health-optimal) / 0.5))",
+  };
+
   const color = colorMap[healthLevel];
   const circumference = 2 * Math.PI * 54;
   const offset = circumference - (healthScore / 100) * circumference;
-
-  // Breach threshold line position (0.65 of capacity)
   const breachThreshold = 0.65;
   const isAboveThreshold = entropy > breachThreshold * capacity;
 
   return (
-    <div className="flex flex-col items-center gap-3">
-      <div className="relative w-36 h-36">
-        <svg viewBox="0 0 120 120" className="w-full h-full -rotate-90">
-          <circle cx="60" cy="60" r="54" fill="none" stroke="hsl(var(--muted))" strokeWidth="8" />
+    <div className="flex flex-col items-center gap-4">
+      <div className="relative w-40 h-40">
+        <svg viewBox="0 0 120 120" className="w-full h-full -rotate-90" style={{ filter: glowMap[healthLevel] }}>
+          {/* Background track */}
+          <circle cx="60" cy="60" r="54" fill="none" stroke="hsl(var(--muted))" strokeWidth="6" opacity={0.3} />
           {/* Breach threshold marker */}
           <circle
-            cx="60"
-            cy="60"
-            r="54"
-            fill="none"
+            cx="60" cy="60" r="54" fill="none"
             stroke="hsl(var(--health-critical))"
-            strokeWidth="2"
+            strokeWidth="1.5"
             strokeDasharray={`${circumference * 0.65} ${circumference * 0.35}`}
-            opacity={0.4}
+            opacity={0.3}
           />
-          <circle
-            cx="60"
-            cy="60"
-            r="54"
-            fill="none"
+          {/* Active arc */}
+          <motion.circle
+            cx="60" cy="60" r="54" fill="none"
             stroke={color}
-            strokeWidth="8"
+            strokeWidth="7"
             strokeLinecap="round"
             strokeDasharray={circumference}
-            strokeDashoffset={offset}
-            className="transition-all duration-700 ease-out"
+            initial={{ strokeDashoffset: circumference }}
+            animate={{ strokeDashoffset: offset }}
+            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
           />
+          {/* Inner glow ring */}
+          <circle cx="60" cy="60" r="48" fill="none" stroke={color} strokeWidth="0.5" opacity={0.2} />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-3xl font-bold font-display" style={{ color }}>
+          <motion.span
+            className="text-4xl font-bold font-display"
+            style={{ color }}
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.5, duration: 0.5, type: "spring" }}
+          >
             {Math.round(healthScore)}
-          </span>
-          <span className="text-xs text-muted-foreground">{labelMap[healthLevel]}</span>
+          </motion.span>
+          <span className="text-[10px] text-muted-foreground uppercase tracking-widest mt-0.5">{labelMap[healthLevel]}</span>
         </div>
       </div>
 
-      {/* J-Quotient display */}
-      <div className="text-center space-y-1">
-        <p className="text-xs text-muted-foreground">J-Quotient = C / E</p>
-        <p className="text-lg font-bold font-display" style={{ color }}>
+      <div className="text-center space-y-1.5">
+        <p className="text-[10px] text-muted-foreground uppercase tracking-wider">J-Quotient = C / E</p>
+        <p className="text-xl font-bold font-display" style={{ color }}>
           J = {jQuotient.toFixed(2)}
         </p>
         {isAboveThreshold && (
-          <p className="text-[10px] text-destructive font-medium animate-pulse">
+          <motion.p
+            className="text-[10px] text-destructive font-medium"
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
             ⚠ מעל סף שבירה: E &gt; 0.65C
-          </p>
+          </motion.p>
         )}
       </div>
     </div>
