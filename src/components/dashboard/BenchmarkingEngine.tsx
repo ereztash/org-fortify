@@ -2,11 +2,11 @@ import { useCOR } from "@/contexts/CORContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart3 } from "lucide-react";
 import { benchmarkData } from "@/lib/industryFactors";
+import { motion } from "framer-motion";
 
 export function BenchmarkingEngine() {
   const { jQuotient, organizationSize } = useCOR();
 
-  // Calculate percentile based on J-Quotient
   const getPercentile = (j: number): number => {
     const { percentiles } = benchmarkData;
     if (j <= percentiles[0].j) return percentiles[0].percentile;
@@ -25,24 +25,29 @@ export function BenchmarkingEngine() {
   const isAtRisk = jQuotient < benchmarkData.collapseThreshold;
 
   return (
-    <Card className="glass border-border/50">
-      <CardHeader>
+    <Card className="glass-strong border-border/30 overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-health-optimal/5 to-transparent pointer-events-none" />
+      <CardHeader className="relative">
         <CardTitle className="text-lg flex items-center gap-2">
-          <BarChart3 className="w-5 h-5 text-primary" />
+          <div className="w-8 h-8 rounded-lg bg-health-optimal/10 flex items-center justify-center">
+            <BarChart3 className="w-4 h-4 text-health-optimal" />
+          </div>
           Benchmarking: מול 100 ארגונים
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-5">
+      <CardContent className="relative space-y-5">
         {/* Percentile bar */}
         <div className="space-y-2">
           <p className="text-sm text-muted-foreground">
             ביחס לארגונים בגודל {organizationSize > 200 ? "200+" : organizationSize > 100 ? "100-200" : "עד 100"} עובדים:
           </p>
-          <div className="relative h-8 rounded-full bg-muted overflow-hidden">
-            <div
-              className="absolute inset-y-0 left-0 rounded-full transition-all duration-700 ease-out"
+          <div className="relative h-10 rounded-xl bg-muted/20 overflow-hidden border border-border/15">
+            <motion.div
+              className="absolute inset-y-0 left-0 rounded-xl"
+              initial={{ width: 0 }}
+              animate={{ width: `${percentile}%` }}
+              transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
               style={{
-                width: `${percentile}%`,
                 background: `linear-gradient(90deg, hsl(var(--health-critical)), hsl(var(--health-warning)), hsl(var(--primary)))`,
               }}
             />
@@ -56,31 +61,39 @@ export function BenchmarkingEngine() {
         <div className="grid grid-cols-3 gap-3 text-center">
           {benchmarkData.percentiles
             .filter((_, i) => i % 2 === 0)
-            .map((p) => (
-              <div
-                key={p.percentile}
-                className={`rounded-lg p-3 border ${
-                  Math.abs(p.j - jQuotient) < 0.3
-                    ? "border-primary/50 bg-primary/5"
-                    : "border-border/30 bg-background/30"
-                }`}
-              >
-                <p className="text-lg font-bold font-display text-foreground">{p.j}</p>
-                <p className="text-[10px] text-muted-foreground">P{p.percentile} J</p>
-              </div>
-            ))}
+            .map((p) => {
+              const isClose = Math.abs(p.j - jQuotient) < 0.3;
+              return (
+                <motion.div
+                  key={p.percentile}
+                  whileHover={{ scale: 1.03 }}
+                  className={`rounded-xl p-3 border transition-all duration-300 ${
+                    isClose
+                      ? "border-primary/40 bg-primary/10 shadow-sm shadow-primary/10"
+                      : "border-border/20 bg-background/20 hover:border-border/30"
+                  }`}
+                >
+                  <p className="text-xl font-bold font-display text-foreground">{p.j}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">P{p.percentile} J</p>
+                </motion.div>
+              );
+            })}
         </div>
 
         {/* Risk warning */}
         {isAtRisk && (
-          <div className="rounded-lg p-3 bg-destructive/10 border border-destructive/20 text-sm text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="rounded-xl p-4 bg-destructive/10 border border-destructive/20 text-sm text-center"
+          >
             <p className="text-destructive font-medium">
               ⚠ חברות דומות עם J &lt; {benchmarkData.collapseThreshold} קרסו תוך {benchmarkData.collapseTimeMonths} חודשים
             </p>
-          </div>
+          </motion.div>
         )}
 
-        <p className="text-[10px] text-muted-foreground/60 text-center font-mono">
+        <p className="text-[10px] text-muted-foreground/40 text-center font-mono">
           מקור: מחקר COR-SYS על 100 ארגונים ו-10,000 סימולציות
         </p>
       </CardContent>
